@@ -3,26 +3,30 @@
 import { useEffect, useRef } from "react";
 
 const GameChat = ({ messages }: { messages: string[] }) => {
-  const messagesRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const messageCount = messages.length;
+
+  // Scroll only the chat box itself. (scrollIntoView also scrolls every
+  // ancestor, including the page, which made the whole page jump down.)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const el = containerRef.current;
+    if (!el) return;
+    el.scrollTo?.({ top: el.scrollHeight, behavior: "smooth" });
+  }, [messageCount]);
+
   return (
     <div
-      ref={messagesRef}
-      //bg-gray-100 rounded-lg shadow-md
-      className="flex flex-1 flex-col pr-2 space-y-2 items-start max-h-40 overflow-y-auto"
+      ref={containerRef}
+      className="flex max-h-40 flex-1 flex-col items-start space-y-2 overflow-y-auto pr-2"
     >
       {messages.map((msg, i) => (
         <div
           key={i}
-          className="rounded-lg px-3 py-2 bg-indigo-600/[.25] text-white shadow text-sm"
+          className="rounded-lg bg-indigo-600/[.25] px-3 py-2 text-sm text-white shadow"
         >
           {msg}
         </div>
       ))}
-      <div ref={bottomRef} />
     </div>
   );
 };

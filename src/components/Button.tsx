@@ -9,3 +9,5 @@ const Button = ({ onClick, ...rest }: ButtonProps) => {
     </button>
   );
 };
+
+export default Button;

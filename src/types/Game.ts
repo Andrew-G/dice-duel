@@ -1,4 +1,4 @@
-import { Dice, KeepMask } from "./dice";
+import type { Dice, KeepMask } from "./Dice";
 
 export type ScoreCategory =
   | "ones"
@@ -22,6 +22,7 @@ export type ScoreSheet = {
   fours: number | null;
   fives: number | null;
   sixes: number | null;
+  /** Sum of the six upper boxes (before the 35pt bonus). */
   upper_section_total: number;
   upper_bonus_earned: boolean;
   three_of_a_kind: number | null;
@@ -31,8 +32,11 @@ export type ScoreSheet = {
   large_straight: number | null;
   yahtzee: number | null;
   chance: number | null;
+  /** Accumulated extra-Yahtzee bonuses (100 each). */
   lower_bonus: number | null;
+  /** Sum of the lower boxes plus lower_bonus. */
   lower_total: number | null;
+  /** Upper total + upper bonus + lower total. */
   total: number | null;
 };
 
@@ -49,13 +53,9 @@ export type GameState = {
   gameStatus: GameStatus;
 };
 
-export const defaultGameState: GameState = {
-  playerId: "",
-  currentRoll: null,
-  validCategories: [],
-  keepMask: [0, 0, 0, 0, 0],
-  rollsRemaining: 3,
-  scoreSheet: {
+/** Always returns a fresh object, so sheets are never shared by accident. */
+export function createEmptyScoreSheet(): ScoreSheet {
+  return {
     ones: null,
     twos: null,
     threes: null,
@@ -74,7 +74,16 @@ export const defaultGameState: GameState = {
     lower_bonus: 0,
     lower_total: 0,
     total: 0,
-  },
+  };
+}
+
+export const defaultGameState: GameState = {
+  playerId: "",
+  currentRoll: null,
+  validCategories: [],
+  keepMask: [0, 0, 0, 0, 0],
+  rollsRemaining: 3,
+  scoreSheet: createEmptyScoreSheet(),
   turnNumber: 1,
   gameStatus: "in_progress",
 };

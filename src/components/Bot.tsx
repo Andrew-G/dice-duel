@@ -1,4 +1,4 @@
-import { Mood } from "@/constants/types";
+import { Mood } from "@/types/Character";
 
 const imgByMood: Record<Mood, string> = {
   angry: "/img/bubloopack/angry.gif",

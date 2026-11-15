@@ -1,4 +1,4 @@
-import { GameState } from "@/constants/types";
+import { GameState } from "@/types/Game";
 import React from "react";
 
 const scoreCategoryNames: Record<string, string> = {

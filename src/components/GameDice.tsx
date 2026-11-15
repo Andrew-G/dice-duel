@@ -1,4 +1,4 @@
-import { Dice, KeepMask } from "@/constants/types";
+import { Dice, KeepMask } from "@/types/Dice";
 import useDiceWave from "@/hooks/useDiceWave";
 import { useEffect, useState } from "react";
 

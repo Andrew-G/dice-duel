@@ -1,4 +1,4 @@
-import { GameState } from "@/types/game";
+import { GameState } from "@/types/Game";
 import React from "react";
 
 const GameStateTable = ({

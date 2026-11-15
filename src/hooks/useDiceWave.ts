@@ -49,7 +49,7 @@ const useDiceWave = (active: boolean) => {
       let index = 0;
       let isUp = true;
       const interval = setInterval(() => {
-        let newPositions = Array(5).fill([0, 0]);
+        const newPositions = Array(5).fill([0, 0]);
 
         if (isUp) {
           newPositions[index] = [0, -4]; // Move dice up
