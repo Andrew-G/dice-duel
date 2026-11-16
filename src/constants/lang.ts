@@ -1,4 +1,13 @@
-export const phrases = {
+export enum PHRASE_TYPE {
+  GREETINGS = 'greetings',
+  THINKING = 'thinking',
+  SUCCESS = 'success',
+  FAILURE = 'failure',
+}
+
+export type PHRASES = Record<PHRASE_TYPE,string[]>
+
+export const phrases: PHRASES = {
   // Greeting the user when they join the game.
   greetings: [
     "Yo, wanna roll?",

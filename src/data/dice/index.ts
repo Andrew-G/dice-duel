@@ -2,6 +2,7 @@ import type { DiceTheme } from "@/types/DiceTheme";
 import { emberTheme } from "./themes/ember";
 import { emeraldTheme } from "./themes/emerald";
 import { ivoryTheme } from "./themes/ivory";
+import { bonesTheme } from "./themes/bones";
 import { sakuraTheme } from "./themes/sakura";
 import { cursedTheme } from "./themes/cursed";
 import { luckyCloverTheme } from "./themes/lucky-clover";
@@ -9,6 +10,7 @@ import { celestialTheme } from "./themes/celestial";
 import { cyberGridTheme } from "./themes/cyber-grid";
 import { obsidianGoldTheme } from "./themes/obsidian-gold";
 import { obsidianTheme } from "./themes/obsidian";
+import { obsidianRedTheme } from "./themes/obsidian-red";
 import { voidTheme } from "./themes/void";
 import { royalAmethystTheme } from "./themes/royalAmethyst";
 import { frostTheme } from "./themes/frost";
@@ -17,6 +19,7 @@ import { starlightTheme } from "./themes/starlight";
 
 export const DICE_THEMES: DiceTheme[] = [
   ivoryTheme,
+  bonesTheme,
   emberTheme,
   emeraldTheme,
   sakuraTheme,
@@ -26,6 +29,7 @@ export const DICE_THEMES: DiceTheme[] = [
   cyberGridTheme,
   obsidianGoldTheme,
   obsidianTheme,
+  obsidianRedTheme,
   voidTheme,
   royalAmethystTheme,
   frostTheme,
