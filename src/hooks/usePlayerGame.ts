@@ -128,7 +128,10 @@ export function usePlayerGame({
   const allKept = state.keepMask.every((v) => v === 1);
 
   const canRoll =
-    !state.isRolling && !isFinished && rollsRemaining > 0 && !(state.dice && allKept);
+    !state.isRolling &&
+    !isFinished &&
+    rollsRemaining > 0 &&
+    !(state.dice && allKept);
   const canHold = !!state.dice && !state.isRolling && rollsRemaining > 0;
   const canScore = !!state.dice && !state.isRolling && !isFinished;
 
@@ -163,7 +166,7 @@ export function usePlayerGame({
   useEffect(() => {
     if (!isPlayerTurn) return;
 
-const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if user is typing inside an input/textarea or using modifier keys
       if (
         ["input", "textarea", "select"].includes(
@@ -187,11 +190,16 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
       // Map number keys (1-5) and letter keys (a, s, d, f, g) to dice indices (0-4)
       const keyMap: Record<string, number> = {
-        "1": 0, a: 0,
-        "2": 1, s: 1,
-        "3": 2, d: 2,
-        "4": 3, f: 3,
-        "5": 4, g: 4,
+        "1": 0,
+        a: 0,
+        "2": 1,
+        s: 1,
+        "3": 2,
+        d: 2,
+        "4": 3,
+        f: 3,
+        "5": 4,
+        g: 4,
       };
 
       const normalizedKey = e.key.toLowerCase();
@@ -240,3 +248,5 @@ const handleKeyDown = (e: KeyboardEvent) => {
     reset,
   };
 }
+
+export type PlayerGame = ReturnType<typeof usePlayerGame>;

@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { ROLLS_PER_TURN, TURNS_PER_GAME, scoreCategory } from "@/engine/score";
 import { applyScore } from "@/engine/sheet";
-import { decideCategory, decideKeep, type BotSkill } from "@/engine/solver/policy";
+import {
+  decideCategory,
+  decideKeep,
+  type BotSkill,
+} from "@/engine/solver/policy";
 import { rollDice } from "@/engine/solver/simulate";
 import {
   getLoadedSolverTable,
@@ -46,9 +50,18 @@ export interface UseLiveOpponentOptions {
  */
 export function useLiveOpponent(
   skill: BotSkill | null,
-  { rollMs = 600, stepMs = 600, rng = Math.random, onTurnComplete }: UseLiveOpponentOptions = {}
+  {
+    rollMs = 600,
+    stepMs = 600,
+    rng = Math.random,
+    onTurnComplete,
+  }: UseLiveOpponentOptions = {}
 ): OpponentController & { error: string | null } {
-  const [state, dispatch] = useReducer(opponentReducer, undefined, initialOpponentState);
+  const [state, dispatch] = useReducer(
+    opponentReducer,
+    undefined,
+    initialOpponentState
+  );
   const [mood, setMood] = useState<Mood>("neutral");
   const [messages, setMessages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +103,8 @@ export function useLiveOpponent(
 
   const playTurn = useCallback(() => {
     const bot = skill;
-    if (!bot || playingRef.current || turnsRef.current >= TURNS_PER_GAME) return;
+    if (!bot || playingRef.current || turnsRef.current >= TURNS_PER_GAME)
+      return;
 
     playingRef.current = true;
     setError(null);
@@ -115,11 +129,19 @@ export function useLiveOpponent(
     const runTurn = (table: SolverTable) => {
       const sheet = sheetRef.current;
 
-      const rollStep = (rollNo: number, mask: KeepMask, previous: Dice | null) => {
+      const rollStep = (
+        rollNo: number,
+        mask: KeepMask,
+        previous: Dice | null
+      ) => {
         dispatch({ type: "ROLL_START", keepMask: mask });
         later(rollMs, () => {
           const dice = rollDice(previous, mask, rng);
-          dispatch({ type: "ROLL_DONE", dice, rollsRemaining: ROLLS_PER_TURN - rollNo });
+          dispatch({
+            type: "ROLL_DONE",
+            dice,
+            rollsRemaining: ROLLS_PER_TURN - rollNo,
+          });
           later(stepMs, () => decide(rollNo, dice));
         });
       };
@@ -174,7 +196,9 @@ export function useLiveOpponent(
           playingRef.current = false;
           dispatch({ type: "TURN_ABORT" });
           setMood("neutral");
-          setError(failure instanceof Error ? failure.message : String(failure));
+          setError(
+            failure instanceof Error ? failure.message : String(failure)
+          );
         }
       );
     }

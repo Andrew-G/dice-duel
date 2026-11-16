@@ -13,7 +13,9 @@ export function serializeRecordedGame(game: RecordedGame): string {
 }
 
 /** e.g. "Dave's best game!" + "g1abc" -> "daves-best-game-g1abc.json" */
-export function recordingFileName(game: Pick<RecordedGame, "id" | "label">): string {
+export function recordingFileName(
+  game: Pick<RecordedGame, "id" | "label">
+): string {
   const slug = game.label
     .toLowerCase()
     .replace(/['’]/g, "")

@@ -1,5 +1,3 @@
-import type { Dice, KeepMask } from "./Dice";
-
 export type ScoreCategory =
   | "ones"
   | "twos"
@@ -7,11 +5,11 @@ export type ScoreCategory =
   | "fours"
   | "fives"
   | "sixes"
-  | "three_of_a_kind"
-  | "four_of_a_kind"
-  | "full_house"
-  | "small_straight"
-  | "large_straight"
+  | "threeOfAKind"
+  | "fourOfAKind"
+  | "fullHouse"
+  | "smallStraight"
+  | "largeStraight"
   | "yahtzee"
   | "chance";
 
@@ -23,34 +21,21 @@ export type ScoreSheet = {
   fives: number | null;
   sixes: number | null;
   /** Sum of the six upper boxes (before the 35pt bonus). */
-  upper_section_total: number;
-  upper_bonus_earned: boolean;
-  three_of_a_kind: number | null;
-  four_of_a_kind: number | null;
-  full_house: number | null;
-  small_straight: number | null;
-  large_straight: number | null;
+  upperSectionTotal: number;
+  upperBonusEarned: boolean;
+  threeOfAKind: number | null;
+  fourOfAKind: number | null;
+  fullHouse: number | null;
+  smallStraight: number | null;
+  largeStraight: number | null;
   yahtzee: number | null;
   chance: number | null;
   /** Accumulated extra-Yahtzee bonuses (100 each). */
-  lower_bonus: number | null;
-  /** Sum of the lower boxes plus lower_bonus. */
-  lower_total: number | null;
+  lowerBonus: number | null;
+  /** Sum of the lower boxes plus lowerBonus. */
+  lowerTotal: number | null;
   /** Upper total + upper bonus + lower total. */
   total: number | null;
-};
-
-export type GameStatus = "in_progress" | "finished";
-
-export type GameState = {
-  playerId: string;
-  currentRoll: Dice | null;
-  validCategories: ScoreCategory[];
-  keepMask: KeepMask;
-  rollsRemaining: number;
-  scoreSheet: ScoreSheet;
-  turnNumber: number;
-  gameStatus: GameStatus;
 };
 
 /** Always returns a fresh object, so sheets are never shared by accident. */
@@ -62,28 +47,17 @@ export function createEmptyScoreSheet(): ScoreSheet {
     fours: null,
     fives: null,
     sixes: null,
-    upper_section_total: 0,
-    upper_bonus_earned: false,
-    three_of_a_kind: null,
-    four_of_a_kind: null,
-    full_house: null,
-    small_straight: null,
-    large_straight: null,
+    upperSectionTotal: 0,
+    upperBonusEarned: false,
+    threeOfAKind: null,
+    fourOfAKind: null,
+    fullHouse: null,
+    smallStraight: null,
+    largeStraight: null,
     yahtzee: null,
     chance: null,
-    lower_bonus: 0,
-    lower_total: 0,
+    lowerBonus: 0,
+    lowerTotal: 0,
     total: 0,
   };
 }
-
-export const defaultGameState: GameState = {
-  playerId: "",
-  currentRoll: null,
-  validCategories: [],
-  keepMask: [0, 0, 0, 0, 0],
-  rollsRemaining: 3,
-  scoreSheet: createEmptyScoreSheet(),
-  turnNumber: 1,
-  gameStatus: "in_progress",
-};

@@ -18,7 +18,8 @@ const HEADER_BYTES = 16;
 export const SOLVER_TABLE_URL = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/solver/yahtzee-values.bin`;
 
 export function encodeSolverTable(values: ArrayLike<number>): Uint8Array {
-  if (values.length !== STATE_COUNT) throw new Error(`Expected ${STATE_COUNT} values`);
+  if (values.length !== STATE_COUNT)
+    throw new Error(`Expected ${STATE_COUNT} values`);
   const bytes = new Uint8Array(HEADER_BYTES + STATE_COUNT * 2);
   const view = new DataView(bytes.buffer);
   for (let i = 0; i < 4; i++) bytes[i] = MAGIC.charCodeAt(i);
@@ -26,7 +27,8 @@ export function encodeSolverTable(values: ArrayLike<number>): Uint8Array {
   view.setUint32(8, STATE_COUNT, true);
   for (let i = 0; i < STATE_COUNT; i++) {
     const fixed = Math.round(values[i] * TABLE_SCALE);
-    if (fixed < 0 || fixed > 0xffff) throw new Error(`Value ${values[i]} at ${i} doesn't fit in 16 bits`);
+    if (fixed < 0 || fixed > 0xffff)
+      throw new Error(`Value ${values[i]} at ${i} doesn't fit in 16 bits`);
     view.setUint16(HEADER_BYTES + i * 2, fixed, true);
   }
   return bytes;
@@ -34,7 +36,8 @@ export function encodeSolverTable(values: ArrayLike<number>): Uint8Array {
 
 /** Validates the header (so a 404 page or stale file fails loudly) and wraps the data. */
 export function decodeSolverTable(buffer: ArrayBuffer): SolverTable {
-  if (buffer.byteLength < HEADER_BYTES) throw new Error("Solver table is too small");
+  if (buffer.byteLength < HEADER_BYTES)
+    throw new Error("Solver table is too small");
   const view = new DataView(buffer);
   const magic = String.fromCharCode(...new Uint8Array(buffer, 0, 4));
   const scale = view.getUint32(4, true);

@@ -101,7 +101,11 @@ export function opponentReducer(
     case "KEEP":
       return { ...state, keepMask: action.keepMask };
     case "SCORE": {
-      const scoreSheet = applyScore(state.scoreSheet, action.dice, action.category);
+      const scoreSheet = applyScore(
+        state.scoreSheet,
+        action.dice,
+        action.category
+      );
       return {
         ...state,
         scoreSheet,
@@ -129,10 +133,11 @@ export function opponentReducer(
 // ---------------------------------------------------------------------------
 function isGoodScore(category: ScoreCategory, score: number): boolean {
   if (score === 0) return false;
-  if (isUpperCategory(category)) return score >= 3 * upperCategoryFace(category);
+  if (isUpperCategory(category))
+    return score >= 3 * upperCategoryFace(category);
   switch (category) {
-    case "three_of_a_kind":
-    case "four_of_a_kind":
+    case "threeOfAKind":
+    case "fourOfAKind":
       return score >= 20;
     case "chance":
       return score >= 22;
@@ -156,4 +161,3 @@ export function reactToScore(
   }
   return { mood: "neutral" };
 }
-

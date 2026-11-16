@@ -126,6 +126,10 @@ export const HAND_KEEP_LIST = Int16Array.from(handKeeps);
 
 /** Probability of each hand on the opening 5-dice roll. */
 export const OPENING_PROB = new Float64Array(NUM_HANDS);
-for (let j = KEEP_OUT_START[EMPTY_KEEP_ID]; j < KEEP_OUT_START[EMPTY_KEEP_ID + 1]; j++) {
+for (
+  let j = KEEP_OUT_START[EMPTY_KEEP_ID];
+  j < KEEP_OUT_START[EMPTY_KEEP_ID + 1];
+  j++
+) {
   OPENING_PROB[KEEP_OUT_HAND[j]] = KEEP_OUT_PROB[j];
 }

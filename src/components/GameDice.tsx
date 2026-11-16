@@ -1,5 +1,5 @@
 import { DEFAULT_DICE_ID, getDiceTheme } from "@/data/dice";
-import useDiceWave from "@/hooks/useDiceWave";
+import { useDiceWave } from "@/hooks/useDiceWave";
 import type { Dice, Die, KeepMask } from "@/types/Dice";
 import type { DiceTheme } from "@/types/DiceTheme";
 import clsx from "clsx";
@@ -31,10 +31,7 @@ const PIP_STYLE_FILTERS = {
  * Combines the optional theme filter with the pip style.
  */
 const getPipFilter = (theme: DiceTheme) =>
-  [
-    theme.faceFilter,
-    PIP_STYLE_FILTERS[theme.pipStyle ?? "flat"],
-  ]
+  [theme.faceFilter, PIP_STYLE_FILTERS[theme.pipStyle ?? "flat"]]
     .filter(Boolean)
     .join(" ") || undefined;
 
@@ -67,23 +64,25 @@ const themeVars = (theme: DiceTheme) =>
     "--die-highlight-secondary": theme.highlightSecondary,
     "--die-shadow": theme.shadowColor,
     "--die-pip-size": theme.pipSize ?? "70%",
-  } as CSSProperties);
+  }) as CSSProperties;
 
-const GameDice: React.FC<{
+type GameDiceProps = {
   dice?: Dice;
   keepMask: KeepMask;
   diceId?: string;
   isRolling?: boolean;
   isWaiting?: boolean;
   onKeepToggle?: (index: number) => void;
-}> = ({
+};
+
+const GameDice = ({
   dice,
   keepMask,
   diceId = DEFAULT_DICE_ID,
   isRolling,
   isWaiting,
   onKeepToggle,
-}) => {
+}: GameDiceProps) => {
   const theme = getDiceTheme(diceId);
   const wavePositions = useDiceWave(!!isWaiting);
 
@@ -114,9 +113,7 @@ const GameDice: React.FC<{
           { length: 5 },
           () => Math.floor(Math.random() * 6) + 1
         ).map((die, index) =>
-          keepMask?.[index] === 1
-            ? die
-            : Math.floor(Math.random() * 6) + 1
+          keepMask?.[index] === 1 ? die : Math.floor(Math.random() * 6) + 1
         );
 
         setDiceRollValues(newRollValues);
@@ -145,12 +142,9 @@ const GameDice: React.FC<{
         const isKept = !!keepMask[i];
         const isShaking = isRolling && !isKept;
 
-        const faceValue = (
-          isShaking ? diceRollValues[i] : d ?? 1
-        ) as Die;
+        const faceValue = (isShaking ? diceRollValues[i] : (d ?? 1)) as Die;
 
-        const activePips =
-          PIP_POSITIONS[faceValue] ?? PIP_POSITIONS[1];
+        const activePips = PIP_POSITIONS[faceValue] ?? PIP_POSITIONS[1];
 
         return (
           <div
@@ -164,10 +158,10 @@ const GameDice: React.FC<{
                     }px) rotate(${diceRollPositions[i][0] * 5}deg)`,
                   }
                 : isWaiting
-                ? {
-                    transform: `translate(0px, ${wavePositions[i][1]}px)`,
-                  }
-                : undefined
+                  ? {
+                      transform: `translate(0px, ${wavePositions[i][1]}px)`,
+                    }
+                  : undefined
             }
           >
             <button
@@ -189,8 +183,8 @@ const GameDice: React.FC<{
                 isKept
                   ? "border-2 border-[color:var(--die-highlight-primary)] motion-safe:animate-die-throb"
                   : "border-l border-t border-b-2 border-r-2 " +
-                    "border-l-[color:var(--die-border-light)] border-t-[color:var(--die-border-light)] " +
-                    "border-b-[color:var(--die-border-dark)] border-r-[color:var(--die-border-dark)]"
+                      "border-l-[color:var(--die-border-light)] border-t-[color:var(--die-border-light)] " +
+                      "border-b-[color:var(--die-border-dark)] border-r-[color:var(--die-border-dark)]"
               )}
               onClick={() => onKeepToggle?.(i)}
             >
@@ -211,8 +205,7 @@ const GameDice: React.FC<{
                         style={{
                           display: "block",
 
-                          backgroundColor:
-                            theme.pipColor ?? DEFAULT_PIP_COLOR,
+                          backgroundColor: theme.pipColor ?? DEFAULT_PIP_COLOR,
 
                           opacity: theme.faceOpacity,
 

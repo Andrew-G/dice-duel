@@ -45,7 +45,11 @@ export function useReplay(
   game: RecordedGame | null,
   { rollMs = 600, stepMs = 600, onTurnComplete }: UseReplayOptions = {}
 ): OpponentController {
-  const [state, dispatch] = useReducer(opponentReducer, undefined, initialOpponentState);
+  const [state, dispatch] = useReducer(
+    opponentReducer,
+    undefined,
+    initialOpponentState
+  );
   const [mood, setMood] = useState<Mood>("neutral");
   const [messages, setMessages] = useState<string[]>([]);
 
@@ -77,7 +81,9 @@ export function useReplay(
     if (game && process.env.NODE_ENV !== "production") {
       const errors = validateRecordedGame(game);
       if (errors.length > 0) {
-        console.error(`Recorded game "${game.id}" is invalid:\n- ${errors.join("\n- ")}`);
+        console.error(
+          `Recorded game "${game.id}" is invalid:\n- ${errors.join("\n- ")}`
+        );
       }
     }
   }, [game, reset]);

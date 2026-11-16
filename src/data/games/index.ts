@@ -12,4 +12,7 @@ import g1 from "./untitled-game-gmwg0l1ar.json";
  * of your own, delete placeholder-bots.json and its import. In dev, a recording
  * that fails validation is reported in the browser console when replayed.
  */
-export const recordedGames = [...placeholderBots, g1] as unknown as RecordedGame[];
+export const recordedGames = [
+  ...placeholderBots,
+  g1,
+] as unknown as RecordedGame[];

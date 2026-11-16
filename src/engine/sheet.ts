@@ -39,13 +39,13 @@ export function recalculate(sheet: ScoreSheet): ScoreSheet {
     (sum, c) => sum + (sheet[c] ?? 0),
     0
   );
-  const lowerTotal = lowerBoxes + (sheet.lower_bonus ?? 0);
+  const lowerTotal = lowerBoxes + (sheet.lowerBonus ?? 0);
 
   return {
     ...sheet,
-    upper_section_total: upper,
-    upper_bonus_earned: upperBonusEarned,
-    lower_total: lowerTotal,
+    upperSectionTotal: upper,
+    upperBonusEarned: upperBonusEarned,
+    lowerTotal: lowerTotal,
     total: upper + (upperBonusEarned ? UPPER_BONUS_POINTS : 0) + lowerTotal,
   };
 }
@@ -55,7 +55,7 @@ export function recalculate(sheet: ScoreSheet): ScoreSheet {
  * Throws if the box is already filled.
  *
  * Extra Yahtzees: if the Yahtzee box already holds 50 and `dice` are another
- * Yahtzee, +100 goes to `lower_bonus`. The dice are then scored normally in
+ * Yahtzee, +100 goes to `lowerBonus`. The dice are then scored normally in
  * whichever open box you pick. Official "Joker" placement rules (forcing the
  * matching upper box first, and scoring full house / straights at full value)
  * are deliberately NOT enforced.
@@ -72,8 +72,8 @@ export function applyScore(
   const points = scoreCategory(dice, category);
   const earnsYahtzeeBonus = isYahtzee(dice) && sheet.yahtzee === YAHTZEE_POINTS;
   const lowerBonus =
-    (sheet.lower_bonus ?? 0) + (earnsYahtzeeBonus ? YAHTZEE_BONUS_POINTS : 0);
+    (sheet.lowerBonus ?? 0) + (earnsYahtzeeBonus ? YAHTZEE_BONUS_POINTS : 0);
 
   const next: ScoreSheet = { ...sheet, [category]: points };
-  return recalculate({ ...next, lower_bonus: lowerBonus });
+  return recalculate({ ...next, lowerBonus: lowerBonus });
 }

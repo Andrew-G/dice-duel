@@ -2,10 +2,18 @@ import type { RecordedGame } from "@/types/Recording";
 
 export type DifficultyId = "easy" | "medium" | "hard";
 
-const TIER_META: readonly { id: DifficultyId; label: string; tagline: string }[] = [
+const TIER_META: readonly {
+  id: DifficultyId;
+  label: string;
+  tagline: string;
+}[] = [
   { id: "easy", label: "Easy", tagline: "A casual roller. A good warm-up." },
   { id: "medium", label: "Medium", tagline: "Steady hands. Expect a fight." },
-  { id: "hard", label: "Hard", tagline: "On a hot streak. You'll have to earn this one." },
+  {
+    id: "hard",
+    label: "Hard",
+    tagline: "On a hot streak. You'll have to earn this one.",
+  },
 ];
 
 export interface DifficultyTier {
@@ -31,16 +39,23 @@ function tierIndex(rank: number, count: number): number {
  * the pool, it adapts to however good (or bad) your recorded games are.
  * Tiers with no games are omitted.
  */
-export function buildDifficultyTiers(games: readonly RecordedGame[]): DifficultyTier[] {
+export function buildDifficultyTiers(
+  games: readonly RecordedGame[]
+): DifficultyTier[] {
   const sorted = [...games].sort((a, b) => a.finalScore - b.finalScore);
   const buckets: RecordedGame[][] = [[], [], []];
-  sorted.forEach((game, rank) => buckets[tierIndex(rank, sorted.length)].push(game));
+  sorted.forEach((game, rank) =>
+    buckets[tierIndex(rank, sorted.length)].push(game)
+  );
 
   return TIER_META.map((meta, i) => ({
     ...meta,
     games: buckets[i],
     averageScore: buckets[i].length
-      ? Math.round(buckets[i].reduce((sum, g) => sum + g.finalScore, 0) / buckets[i].length)
+      ? Math.round(
+          buckets[i].reduce((sum, g) => sum + g.finalScore, 0) /
+            buckets[i].length
+        )
       : 0,
   })).filter((tier) => tier.games.length > 0);
 }
@@ -52,6 +67,8 @@ export function pickGameFromTier(
   rng: () => number = Math.random
 ): RecordedGame {
   const candidates =
-    tier.games.length > 1 ? tier.games.filter((g) => g !== exclude) : tier.games;
+    tier.games.length > 1
+      ? tier.games.filter((g) => g !== exclude)
+      : tier.games;
   return candidates[Math.floor(rng() * candidates.length)];
 }

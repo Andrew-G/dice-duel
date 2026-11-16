@@ -50,7 +50,9 @@ export function validateRecordedGame(game: RecordedGame): string[] {
     let turnIsSound = true;
 
     if (rollCount < 1 || rollCount > ROLLS_PER_TURN) {
-      errors.push(`${label}: expected 1-${ROLLS_PER_TURN} rolls, got ${rollCount}`);
+      errors.push(
+        `${label}: expected 1-${ROLLS_PER_TURN} rolls, got ${rollCount}`
+      );
       return;
     }
     if (turn.keeps.length !== rollCount - 1) {
@@ -65,7 +67,9 @@ export function validateRecordedGame(game: RecordedGame): string[] {
         dice.length === 5 &&
         dice.every((d) => Number.isInteger(d) && d >= 1 && d <= 6);
       if (!valid) {
-        errors.push(`${label}, roll ${r + 1}: invalid dice [${dice.join(", ")}]`);
+        errors.push(
+          `${label}, roll ${r + 1}: invalid dice [${dice.join(", ")}]`
+        );
         turnIsSound = false;
         return;
       }
@@ -104,7 +108,9 @@ export function validateRecordedGame(game: RecordedGame): string[] {
   });
 
   if (game.finalScore !== sheet.total) {
-    errors.push(`finalScore is ${game.finalScore} but the turns add up to ${sheet.total}`);
+    errors.push(
+      `finalScore is ${game.finalScore} but the turns add up to ${sheet.total}`
+    );
   }
 
   return errors;

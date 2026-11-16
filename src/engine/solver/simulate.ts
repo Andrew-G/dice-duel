@@ -3,12 +3,23 @@ import { createEmptyScoreSheet } from "@/types/Game";
 import type { RecordedTurn } from "@/types/Recording";
 import { ROLLS_PER_TURN, TURNS_PER_GAME, scoreCategory } from "../score";
 import { applyScore } from "../sheet";
-import { decideCategory, decideKeep, PERFECT_SKILL, type BotSkill } from "./policy";
+import {
+  decideCategory,
+  decideKeep,
+  PERFECT_SKILL,
+  type BotSkill,
+} from "./policy";
 import type { SolverTable } from "./table";
 
-export const rollDice = (previous: Dice | null, mask: KeepMask, rng: () => number): Dice =>
+export const rollDice = (
+  previous: Dice | null,
+  mask: KeepMask,
+  rng: () => number
+): Dice =>
   Array.from({ length: 5 }, (_, i) =>
-    previous && mask[i] === 1 ? previous[i] : ((Math.floor(rng() * 6) + 1) as Die)
+    previous && mask[i] === 1
+      ? previous[i]
+      : ((Math.floor(rng() * 6) + 1) as Die)
   ) as Dice;
 
 /**
@@ -29,14 +40,26 @@ export function simulateGame(
     const keeps: KeepMask[] = [];
     while (rolls.length < ROLLS_PER_TURN) {
       const dice = rolls[rolls.length - 1];
-      const mask = decideKeep(table, sheet, dice, ROLLS_PER_TURN - rolls.length, skill, rng);
+      const mask = decideKeep(
+        table,
+        sheet,
+        dice,
+        ROLLS_PER_TURN - rolls.length,
+        skill,
+        rng
+      );
       if (!mask) break; // stop and score
       keeps.push(mask);
       rolls.push(rollDice(dice, mask, rng));
     }
     const dice = rolls[rolls.length - 1];
     const category = decideCategory(table, sheet, dice, skill, rng);
-    turns.push({ rolls, keeps, category, score: scoreCategory(dice, category) });
+    turns.push({
+      rolls,
+      keeps,
+      category,
+      score: scoreCategory(dice, category),
+    });
     sheet = applyScore(sheet, dice, category);
   }
   return { turns, total: sheet.total ?? 0 };

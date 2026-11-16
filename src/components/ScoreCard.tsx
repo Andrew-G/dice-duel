@@ -5,6 +5,7 @@ import {
   UPPER_CATEGORIES,
 } from "@/engine/score";
 import type { ScoreCategory, ScoreSheet } from "@/types/Game";
+import type { ReactNode } from "react";
 
 const LABELS: Record<ScoreCategory, string> = {
   ones: "Ones",
@@ -13,11 +14,11 @@ const LABELS: Record<ScoreCategory, string> = {
   fours: "Fours",
   fives: "Fives",
   sixes: "Sixes",
-  three_of_a_kind: "Three of a kind",
-  four_of_a_kind: "Four of a kind",
-  full_house: "Full house",
-  small_straight: "Small straight",
-  large_straight: "Large straight",
+  threeOfAKind: "Three of a kind",
+  fourOfAKind: "Four of a kind",
+  fullHouse: "Full house",
+  smallStraight: "Small straight",
+  largeStraight: "Large straight",
   yahtzee: "Yahtzee",
   chance: "Chance",
 };
@@ -49,7 +50,10 @@ const ScoreCard = ({
 
     return (
       <tr key={category} className="border-b border-white/10">
-        <th scope="row" className="py-1 pr-2 text-left font-normal text-white/80">
+        <th
+          scope="row"
+          className="py-1 pr-2 text-left font-normal text-white/80"
+        >
           {LABELS[category]}
         </th>
         <td className="w-24 py-0.5 text-right">
@@ -82,20 +86,20 @@ const ScoreCard = ({
   };
 
   const upperBonusCell = (sheet: ScoreSheet) =>
-    sheet.upper_bonus_earned ? (
+    sheet.upperBonusEarned ? (
       `+${UPPER_BONUS_POINTS}`
     ) : (
       <span className="text-white/50">
-        {sheet.upper_section_total}/{UPPER_BONUS_THRESHOLD}
+        {sheet.upperSectionTotal}/{UPPER_BONUS_THRESHOLD}
       </span>
     );
 
   const yahtzeeBonusCell = (sheet: ScoreSheet) =>
-    (sheet.lower_bonus ?? 0) > 0 ? `+${sheet.lower_bonus}` : <Dash />;
+    (sheet.lowerBonus ?? 0) > 0 ? `+${sheet.lowerBonus}` : <Dash />;
 
   const summaryRow = (
     label: string,
-    cell: (sheet: ScoreSheet) => React.ReactNode,
+    cell: (sheet: ScoreSheet) => ReactNode,
     strong = false
   ) => (
     <tr
@@ -106,7 +110,9 @@ const ScoreCard = ({
         <span className={strong ? "font-bold" : ""}>{label}</span>
       </th>
       <td className="w-24 px-2 py-1 text-right">{cell(player)}</td>
-      {opponent && <td className="w-24 px-2 py-1 text-right">{cell(opponent)}</td>}
+      {opponent && (
+        <td className="w-24 px-2 py-1 text-right">{cell(opponent)}</td>
+      )}
     </tr>
   );
 

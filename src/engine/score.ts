@@ -27,11 +27,11 @@ export const UPPER_CATEGORIES = [
 ] as const;
 
 export const LOWER_CATEGORIES = [
-  "three_of_a_kind",
-  "four_of_a_kind",
-  "full_house",
-  "small_straight",
-  "large_straight",
+  "threeOfAKind",
+  "fourOfAKind",
+  "fullHouse",
+  "smallStraight",
+  "largeStraight",
   "yahtzee",
   "chance",
 ] as const;
@@ -102,17 +102,17 @@ export function scoreCategory(dice: Dice, category: ScoreCategory): number {
   }
 
   switch (category) {
-    case "three_of_a_kind":
+    case "threeOfAKind":
       return counts.some((c) => c >= 3) ? sumDice(dice) : 0;
-    case "four_of_a_kind":
+    case "fourOfAKind":
       return counts.some((c) => c >= 4) ? sumDice(dice) : 0;
-    case "full_house":
+    case "fullHouse":
       return counts.includes(3) && counts.includes(2) ? FULL_HOUSE_POINTS : 0;
-    case "small_straight":
+    case "smallStraight":
       return SMALL_STRAIGHT_RUNS.some((run) => run.every((f) => counts[f] > 0))
         ? SMALL_STRAIGHT_POINTS
         : 0;
-    case "large_straight":
+    case "largeStraight":
       return LARGE_STRAIGHT_RUNS.some((run) => run.every((f) => counts[f] > 0))
         ? LARGE_STRAIGHT_POINTS
         : 0;

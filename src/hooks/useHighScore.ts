@@ -42,3 +42,5 @@ export function useHighScore() {
 
   return { best, isNewBest, submit, clearNewBest };
 }
+
+export type HighScore = ReturnType<typeof useHighScore>;

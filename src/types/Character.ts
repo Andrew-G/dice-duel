@@ -1,6 +1,6 @@
 import { BotSkill } from "@/engine/solver/policy";
-import { CHARACTER_ID } from "@/data/opponent";
 import { PHRASES } from "@/constants/lang";
+import { CHARACTER_ID } from "@/data/opponent/characters";
 
 export type Mood =
   | "angry"

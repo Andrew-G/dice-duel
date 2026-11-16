@@ -1,4 +1,4 @@
-import { DiceTheme } from "@/types/DiceTheme";
+import type { DiceTheme } from "@/types/DiceTheme";
 
 export const luckyCloverTheme: DiceTheme = {
   id: "lucky-clover",

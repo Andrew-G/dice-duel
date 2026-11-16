@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useDiceWave = (active: boolean) => {
+export const useDiceWave = (active: boolean) => {
   const [diceRollPositions, setDiceRollPositions] = useState([
     [0, 0],
     [0, 0],
@@ -9,41 +9,6 @@ const useDiceWave = (active: boolean) => {
     [0, 0],
   ]);
 
-  //   useEffect(() => {
-  //     let index = 0;
-  //     let animationFrameId: number;
-  //     const interval = setInterval(() => {
-  //       const startTime = performance.now();
-
-  //       const animate = () => {
-  //         const elapsed = performance.now() - startTime;
-  //         const progress = Math.min(elapsed / 100, 1); // 100ms animation
-
-  //         let newPositions = Array(5)
-  //           .fill(null)
-  //           .map((_, i) => {
-  //             const distance = Math.abs(i - index);
-  //             const maxOffset = -4; // Peak of the wave
-  //             const y = maxOffset * Math.cos(distance * (Math.PI / 4)) * progress; // Smooth easing
-  //             return [0, y];
-  //           });
-
-  //         setDiceRollPositions(newPositions);
-
-  //         if (progress < 1) {
-  //           animationFrameId = requestAnimationFrame(animate);
-  //         }
-  //       };
-
-  //       animationFrameId = requestAnimationFrame(animate);
-  //       index = (index + 1) % 5;
-  //     }, 100);
-
-  //     return () => {
-  //       clearInterval(interval);
-  //       cancelAnimationFrame(animationFrameId);
-  //     };
-  //   }, []);
   useEffect(() => {
     if (active) {
       let index = 0;
@@ -72,5 +37,3 @@ const useDiceWave = (active: boolean) => {
 
   return diceRollPositions;
 };
-
-export default useDiceWave;

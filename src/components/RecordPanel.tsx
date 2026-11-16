@@ -12,7 +12,9 @@ const buttonClass =
 const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {
   const [label, setLabel] = useState("");
   const [id] = useState(() => `g${Date.now().toString(36)}`);
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
+    "idle"
+  );
 
   const game = useMemo(
     () => createRecordedGame(turns, id, label.trim() || "Untitled game"),
@@ -23,7 +25,9 @@ const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {
   const fileName = recordingFileName(game);
 
   const download = () => {
-    const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+    const url = URL.createObjectURL(
+      new Blob([json], { type: "application/json" })
+    );
     const link = document.createElement("a");
     link.href = url;
     link.download = fileName;
@@ -42,7 +46,9 @@ const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {
 
   return (
     <div className="space-y-3 rounded-md bg-black/40 p-4 text-white">
-      <p className="text-lg font-bold">Save this game ({game.finalScore} points)</p>
+      <p className="text-lg font-bold">
+        Save this game ({game.finalScore} points)
+      </p>
 
       <label className="block text-sm text-white/80">
         Name this game
@@ -80,7 +86,8 @@ const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {
 
       <p aria-live="polite" className="min-h-5 text-sm text-white/70">
         {copyState === "copied" && "Copied to clipboard."}
-        {copyState === "failed" && "Couldn't access the clipboard - use Download instead."}
+        {copyState === "failed" &&
+          "Couldn't access the clipboard - use Download instead."}
       </p>
 
       <p className="text-sm text-white/60">

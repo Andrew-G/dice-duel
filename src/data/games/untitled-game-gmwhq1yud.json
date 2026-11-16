@@ -37,7 +37,7 @@
       "keeps": [
         [0, 1, 0, 1, 0]
       ],
-      "category": "large_straight",
+      "category": "largeStraight",
       "score": 40
     },
     {
@@ -50,7 +50,7 @@
         [1, 1, 0, 1, 1],
         [1, 1, 0, 1, 1]
       ],
-      "category": "full_house",
+      "category": "fullHouse",
       "score": 25
     },
     {
@@ -76,7 +76,7 @@
         [0, 0, 1, 1, 0],
         [0, 0, 1, 1, 0]
       ],
-      "category": "three_of_a_kind",
+      "category": "threeOfAKind",
       "score": 20
     },
     {
@@ -128,7 +128,7 @@
         [1, 0, 1, 1, 0],
         [1, 1, 1, 1, 0]
       ],
-      "category": "four_of_a_kind",
+      "category": "fourOfAKind",
       "score": 21
     },
     {
@@ -149,7 +149,7 @@
         [2, 4, 3, 1, 6]
       ],
       "keeps": [],
-      "category": "small_straight",
+      "category": "smallStraight",
       "score": 30
     },
     {

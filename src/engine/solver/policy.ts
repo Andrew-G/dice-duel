@@ -38,12 +38,19 @@ export interface BotSkill {
 export const PERFECT_SKILL: BotSkill = { temperature: 0 };
 
 /** The three numbers that describe a score sheet to the solver. */
-export function stateFromSheet(sheet: ScoreSheet): { used: number; upper: number; yz: number } {
+export function stateFromSheet(sheet: ScoreSheet): {
+  used: number;
+  upper: number;
+  yz: number;
+} {
   let used = 0;
   ALL_CATEGORIES.forEach((category, i) => {
     if (sheet[category] !== null) used |= 1 << i;
   });
-  const upperTotal = UPPER_CATEGORIES.reduce((sum, c) => sum + (sheet[c] ?? 0), 0);
+  const upperTotal = UPPER_CATEGORIES.reduce(
+    (sum, c) => sum + (sheet[c] ?? 0),
+    0
+  );
   return {
     used,
     upper: Math.min(UPPER_CAP, upperTotal),
@@ -52,9 +59,14 @@ export function stateFromSheet(sheet: ScoreSheet): { used: number; upper: number
 }
 
 /** Picks an index from `values` by softmax at `temperature` (0 = argmax, ties -> first). */
-export function sampleSoftmax(values: readonly number[], temperature: number, rng: () => number): number {
+export function sampleSoftmax(
+  values: readonly number[],
+  temperature: number,
+  rng: () => number
+): number {
   let best = 0;
-  for (let i = 1; i < values.length; i++) if (values[i] > values[best]) best = i;
+  for (let i = 1; i < values.length; i++)
+    if (values[i] > values[best]) best = i;
   if (temperature <= 0 || values.length === 1) return best;
 
   const weights = values.map((v) => Math.exp((v - values[best]) / temperature));
@@ -81,7 +93,10 @@ export function evaluateCategories(
   const options: { category: ScoreCategory; value: number }[] = [];
   for (let c = 0; c < NUM_CATEGORIES; c++) {
     if ((used >> c) & 1) continue;
-    options.push({ category: ALL_CATEGORIES[c], value: categoryValue(used, upper, yz, hand, c, lookup) });
+    options.push({
+      category: ALL_CATEGORIES[c],
+      value: categoryValue(used, upper, yz, hand, c, lookup),
+    });
   }
   return options;
 }
@@ -94,7 +109,13 @@ export function decideCategory(
   rng: () => number = Math.random
 ): ScoreCategory {
   const options = evaluateCategories(table, sheet, dice);
-  return options[sampleSoftmax(options.map((o) => o.value), skill.temperature, rng)].category;
+  return options[
+    sampleSoftmax(
+      options.map((o) => o.value),
+      skill.temperature,
+      rng
+    )
+  ].category;
 }
 
 // ---- choosing what to hold ---------------------------------------------------
@@ -162,7 +183,14 @@ export function decideKeep(
     throw new Error(`rollsRemaining must be 1 or 2, got ${rollsRemaining}`);
   }
   const options = evaluateKeeps(table, sheet, dice, rollsRemaining);
-  const { keepId } = options[sampleSoftmax(options.map((o) => o.value), skill.temperature, rng)];
+  const { keepId } =
+    options[
+      sampleSoftmax(
+        options.map((o) => o.value),
+        skill.temperature,
+        rng
+      )
+    ];
   return KEEP_SIZE[keepId] === 5 ? null : keepMaskFor(dice, keepId);
 }
 

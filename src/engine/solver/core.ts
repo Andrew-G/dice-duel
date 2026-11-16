@@ -15,7 +15,13 @@
  *   before roll 2 -> pick the best hold          (rerollLayer)
  *   opening roll  -> average over all hands
  */
-import { ALL_CATEGORIES, UPPER_BONUS_POINTS, UPPER_BONUS_THRESHOLD, YAHTZEE_BONUS_POINTS, YAHTZEE_POINTS } from "../score";
+import {
+  ALL_CATEGORIES,
+  UPPER_BONUS_POINTS,
+  UPPER_BONUS_THRESHOLD,
+  YAHTZEE_BONUS_POINTS,
+  YAHTZEE_POINTS,
+} from "../score";
 import {
   HAND_KEEP_LIST,
   HAND_KEEP_START,
@@ -60,11 +66,17 @@ export function categoryValue(
   let nextUpper = upper;
   if (category < UPPER_BOXES) {
     nextUpper = Math.min(UPPER_CAP, upper + points);
-    if (upper < UPPER_CAP && nextUpper >= UPPER_CAP) bonus += UPPER_BONUS_POINTS;
+    if (upper < UPPER_CAP && nextUpper >= UPPER_CAP)
+      bonus += UPPER_BONUS_POINTS;
   }
   if (yz === 1 && IS_YAHTZEE_HAND[hand] === 1) bonus += YAHTZEE_BONUS_POINTS;
-  const nextYz = yz === 1 || (category === YAHTZEE_BOX && points === YAHTZEE_POINTS) ? 1 : 0;
-  return points + bonus + value(stateIndex(used | (1 << category), nextUpper, nextYz));
+  const nextYz =
+    yz === 1 || (category === YAHTZEE_BOX && points === YAHTZEE_POINTS) ? 1 : 0;
+  return (
+    points +
+    bonus +
+    value(stateIndex(used | (1 << category), nextUpper, nextYz))
+  );
 }
 
 /** out[hand] = value of the best box to put that hand in. */

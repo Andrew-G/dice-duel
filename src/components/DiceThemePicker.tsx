@@ -1,4 +1,3 @@
-
 import { DICE_THEMES } from "@/data/dice";
 import type { DiceTheme } from "@/types/DiceTheme";
 import clsx from "clsx";
@@ -18,27 +17,22 @@ const PIP_STYLE_FILTERS = {
     "drop-shadow(1px 1px 1px rgba(255,255,255,0.55))",
 } as const;
 
-const getPipFilter = (
-  theme: Pick<DiceTheme, "faceFilter" | "pipStyle">
-) =>
-  [
-    theme.faceFilter,
-    PIP_STYLE_FILTERS[theme.pipStyle ?? "flat"],
-  ]
+const getPipFilter = (theme: Pick<DiceTheme, "faceFilter" | "pipStyle">) =>
+  [theme.faceFilter, PIP_STYLE_FILTERS[theme.pipStyle ?? "flat"]]
     .filter(Boolean)
     .join(" ") || undefined;
 
 /** Five-pip preview layout. */
 const PREVIEW_PIP_POSITIONS = new Set([0, 2, 4, 6, 8]);
 
-const DiceThemePicker: React.FC<{
+type DiceThemePickerProps = {
   selectedId: string;
   onSelect: (id: string) => void;
-}> = ({ selectedId, onSelect }) => (
+};
+
+const DiceThemePicker = ({ selectedId, onSelect }: DiceThemePickerProps) => (
   <div className="space-y-2">
-    <h2 className="text-center text-sm font-bold text-white/70">
-      Dice style
-    </h2>
+    <h2 className="text-center text-sm font-bold text-white/70">Dice style</h2>
 
     <div
       role="radiogroup"
@@ -92,8 +86,7 @@ const DiceThemePicker: React.FC<{
                           width: theme.pipSize ?? "70%",
                           height: theme.pipSize ?? "70%",
 
-                          backgroundColor:
-                            theme.pipColor ?? DEFAULT_PIP_COLOR,
+                          backgroundColor: theme.pipColor ?? DEFAULT_PIP_COLOR,
 
                           opacity: theme.faceOpacity,
 
