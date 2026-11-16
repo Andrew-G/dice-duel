@@ -1,28 +1,52 @@
 import type { DiceTheme } from "@/types/DiceTheme";
 import defaultTheme from "./default.json";
-import ember from "./ember.json";
-import emerald from "./emerald.json";
-import sakura from "./sakura.json";
-import ivory from "./ivory.json";
+import { emberTheme } from "./ember";
+import { emeraldTheme } from "./emerald";
+import { ivoryTheme } from "./ivory";
+import { sakuraTheme } from "./sakura";
+import { cursedTheme } from "./cursed";
+import { luckyCloverTheme } from "./lucky-clover";
+import { celestialTheme } from "./celestial";
+import { cyberGridTheme } from "./cyber-grid";
+import { obsidianGoldTheme } from "./obsidian-gold";
 
 /** The theme used when no `diceId` is given, or the id is unknown. */
 export const DEFAULT_DICE_ID = "default";
 
-/**
- * Every dice theme the player can pick from, in picker order.
- *
- * To add one: drop a new JSON file in this folder (copy default.json and
- * change the id + colors), import it above and add it to the array below.
- */
-export const diceThemes: DiceTheme[] = [defaultTheme, ember, emerald, sakura, ivory];
+export const DICE_THEMES: DiceTheme[] = [
+  ivoryTheme,
+  emberTheme,
+  emeraldTheme,
+  sakuraTheme,
+  cursedTheme,
+  luckyCloverTheme,
+  celestialTheme,
+  cyberGridTheme,
+  obsidianGoldTheme,
+];
 
-const themesById = new Map(diceThemes.map((theme) => [theme.id, theme]));
+/** Fast O(1) lookup dictionary for themes by their ID. */
+export const themesById: Record<string, DiceTheme> = DICE_THEMES.reduce(
+  (acc, theme) => {
+    acc[theme.id] = theme;
+    return acc;
+  },
+  {} as Record<string, DiceTheme>
+);
 
-/** Look up a theme by id, falling back to the default theme. */
-export function getDiceTheme(id?: string | null): DiceTheme {
-  const theme = id ? themesById.get(id) : undefined;
-  if (!theme && id && process.env.NODE_ENV !== "production") {
-    console.warn(`Unknown dice theme "${id}"; using "${DEFAULT_DICE_ID}".`);
-  }
-  return theme ?? themesById.get(DEFAULT_DICE_ID) ?? diceThemes[0];
+/** Retrieves a theme by ID, falling back to ivory (or the first theme) if not found. */
+export function getDiceTheme(id: string): DiceTheme {
+  return themesById[id] ?? DICE_THEMES[0];
 }
+
+export {
+  emberTheme,
+  emeraldTheme,
+  ivoryTheme,
+  sakuraTheme,
+  cursedTheme,
+  luckyCloverTheme,
+  celestialTheme,
+  cyberGridTheme,
+  obsidianGoldTheme,
+};
