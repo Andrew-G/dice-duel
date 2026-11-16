@@ -57,7 +57,6 @@ export default function Page() {
   const [playOpponentRollSfx] = useSound(diceRollSfx, { volume: 0.4 });
   const [playChatSfx] = useSound(chatMessageSfx);
 
-  const player = usePlayerGame();
   const replay = useReplay(opponentGame, OPPONENT_PACE);
   const robot = useLiveOpponent(robotLevel?.skill ?? null, OPPONENT_PACE);
   const opponent: OpponentController = robotLevel ? robot : replay;
@@ -67,6 +66,8 @@ export default function Page() {
 
   const isVs = screen === "vs";
   const isOpponentTurn = isVs && opponent.isPlaying;
+
+  const player = usePlayerGame({ isPlayerTurn: !isOpponentTurn });
 
   // --- High score: record it once per finished game -----------------------
   const youTotal = player.scoreSheet.total ?? 0;

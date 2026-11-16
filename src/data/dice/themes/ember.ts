@@ -1,4 +1,4 @@
-import type { DiceTheme } from "../types";
+import { DiceTheme } from "@/types/DiceTheme";
 
 export const emberTheme: DiceTheme = {
   id: "ember",

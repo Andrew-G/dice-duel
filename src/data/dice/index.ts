@@ -1,17 +1,19 @@
 import type { DiceTheme } from "@/types/DiceTheme";
-import defaultTheme from "./default.json";
-import { emberTheme } from "./ember";
-import { emeraldTheme } from "./emerald";
-import { ivoryTheme } from "./ivory";
-import { sakuraTheme } from "./sakura";
-import { cursedTheme } from "./cursed";
-import { luckyCloverTheme } from "./lucky-clover";
-import { celestialTheme } from "./celestial";
-import { cyberGridTheme } from "./cyber-grid";
-import { obsidianGoldTheme } from "./obsidian-gold";
-
-/** The theme used when no `diceId` is given, or the id is unknown. */
-export const DEFAULT_DICE_ID = "default";
+import { emberTheme } from "./themes/ember";
+import { emeraldTheme } from "./themes/emerald";
+import { ivoryTheme } from "./themes/ivory";
+import { sakuraTheme } from "./themes/sakura";
+import { cursedTheme } from "./themes/cursed";
+import { luckyCloverTheme } from "./themes/lucky-clover";
+import { celestialTheme } from "./themes/celestial";
+import { cyberGridTheme } from "./themes/cyber-grid";
+import { obsidianGoldTheme } from "./themes/obsidian-gold";
+import { obsidianTheme } from "./themes/obsidian";
+import { voidTheme } from "./themes/void";
+import { royalAmethystTheme } from "./themes/royalAmethyst";
+import { frostTheme } from "./themes/frost";
+import { midnightNeonTheme } from "./themes/midnightNeon";
+import { starlightTheme } from "./themes/starlight";
 
 export const DICE_THEMES: DiceTheme[] = [
   ivoryTheme,
@@ -23,7 +25,15 @@ export const DICE_THEMES: DiceTheme[] = [
   celestialTheme,
   cyberGridTheme,
   obsidianGoldTheme,
+  obsidianTheme,
+  voidTheme,
+  royalAmethystTheme,
+  frostTheme,
+  midnightNeonTheme,
+  starlightTheme,
 ];
+
+export const DEFAULT_DICE_ID = DICE_THEMES[0].id;
 
 /** Fast O(1) lookup dictionary for themes by their ID. */
 export const themesById: Record<string, DiceTheme> = DICE_THEMES.reduce(

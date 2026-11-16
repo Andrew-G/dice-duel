@@ -1,6 +1,6 @@
 import type { DiceTheme } from "@/types/DiceTheme";
 
-const obsidian: DiceTheme = {
+export const obsidianTheme: DiceTheme = {
   id: "obsidian",
   name: "Obsidian",
 
@@ -22,5 +22,3 @@ const obsidian: DiceTheme = {
 
   faceOpacity: 1,
 };
-
-export default obsidian;

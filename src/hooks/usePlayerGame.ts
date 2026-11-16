@@ -16,6 +16,8 @@ export interface UsePlayerGameOptions {
   rollMs?: number;
   /** Injectable for tests. */
   rng?: () => number;
+  /** Whether it is currently the player's turn (used for keyboard shortcuts). Default true. */
+  isPlayerTurn?: boolean;
 }
 
 interface PlayerState {
@@ -109,6 +111,7 @@ function reducer(state: PlayerState, action: Action): PlayerState {
 export function usePlayerGame({
   rollMs = 600,
   rng = Math.random,
+  isPlayerTurn = true,
 }: UsePlayerGameOptions = {}) {
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
 
@@ -155,6 +158,54 @@ export function usePlayerGame({
   );
 
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
+
+  // Keyboard shortcut listener
+  useEffect(() => {
+    if (!isPlayerTurn) return;
+
+const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing inside an input/textarea or using modifier keys
+      if (
+        ["input", "textarea", "select"].includes(
+          (e.target as HTMLElement)?.tagName?.toLowerCase()
+        ) ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.altKey
+      ) {
+        return;
+      }
+
+      // Space key triggers roll
+      if (e.code === "Space" || e.key === " ") {
+        e.preventDefault(); // Prevent page scrolling
+        if (canRoll) {
+          roll();
+        }
+        return;
+      }
+
+      // Map number keys (1-5) and letter keys (a, s, d, f, g) to dice indices (0-4)
+      const keyMap: Record<string, number> = {
+        "1": 0, a: 0,
+        "2": 1, s: 1,
+        "3": 2, d: 2,
+        "4": 3, f: 3,
+        "5": 4, g: 4,
+      };
+
+      const normalizedKey = e.key.toLowerCase();
+      if (normalizedKey in keyMap) {
+        const index = keyMap[normalizedKey];
+        if (canHold) {
+          toggleKeep(index);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPlayerTurn, canRoll, canHold, roll, toggleKeep]);
 
   const potentialScores = useMemo(
     () =>
