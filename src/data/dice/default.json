@@ -1,0 +1,12 @@
+{
+  "id": "default",
+  "name": "Classic Indigo",
+  "bgFrom": "rgba(129, 140, 248, 0.25)",
+  "bgTo": "rgba(79, 70, 229, 0.25)",
+  "borderLight": "rgba(129, 140, 248, 0.5)",
+  "borderDark": "rgba(79, 70, 229, 0.5)",
+  "highlightPrimary": "#a5b4fc",
+  "highlightSecondary": "#f0abfc",
+  "shadowColor": "rgba(0, 0, 0, 0.3)",
+  "faceOpacity": 0.75
+}

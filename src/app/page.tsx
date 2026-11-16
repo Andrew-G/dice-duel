@@ -6,6 +6,7 @@ import useSound from "use-sound";
 import chatMessageSfx from "@/assets/sfx/chat-message.mp3";
 import diceRollSfx from "@/assets/sfx/dice-roll.mp3";
 import Bot from "@/components/Bot";
+import DiceThemePicker from "@/components/DiceThemePicker";
 import GameChat from "@/components/GameChat";
 import GameDice from "@/components/GameDice";
 import RecordPanel from "@/components/RecordPanel";
@@ -20,6 +21,7 @@ import {
 import { TURNS_PER_GAME } from "@/engine/score";
 import { ROBOT_LEVELS, type RobotLevel } from "@/engine/solver/levels";
 import { loadSolverTable } from "@/engine/solver/table";
+import { useDiceTheme } from "@/hooks/useDiceTheme";
 import { useHighScore } from "@/hooks/useHighScore";
 import { useLiveOpponent } from "@/hooks/useLiveOpponent";
 import type { OpponentController } from "@/hooks/opponentCore";
@@ -60,6 +62,7 @@ export default function Page() {
   const robot = useLiveOpponent(robotLevel?.skill ?? null, OPPONENT_PACE);
   const opponent: OpponentController = robotLevel ? robot : replay;
   const highScore = useHighScore();
+  const diceTheme = useDiceTheme();
   const { submit: submitHighScore, clearNewBest } = highScore;
 
   const isVs = screen === "vs";
@@ -233,6 +236,7 @@ export default function Page() {
                 A live rival that runs the numbers on every roll. Can you out-think it?
               </span>
             </button>
+            <DiceThemePicker selectedId={diceTheme.diceId} onSelect={diceTheme.select} />
           </div>
         )}
 
@@ -334,6 +338,7 @@ export default function Page() {
                   <GameDice
                     dice={active.dice ?? undefined}
                     keepMask={active.keepMask}
+                    diceId={diceTheme.diceId}
                     isRolling={active.isRolling}
                     onKeepToggle={isOpponentTurn ? undefined : player.toggleKeep}
                   />
