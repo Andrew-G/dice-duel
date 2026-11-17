@@ -16,16 +16,20 @@ export type DiceTheme = {
 
   shadowColor: string;
 
-  /** Path to a transparent PNG or SVG pip asset. */
+  /**
+   * Path to a transparent PNG or SVG pip asset. It's the theme's signature
+   * pip, shown (at 16px) only on the face value 1; every other face uses
+   * circle pips.
+   */
   pipSrc?: string;
 
   /** Colour used to tint the pip. */
   pipColor?: string;
 
-  /** Size of each pip relative to its grid cell. */
+  /** Size of each circle pip relative to its grid cell. */
   pipSize?: string;
 
-  /** Visual treatment applied to each pip. */
+  /** Visual treatment applied to every pip, custom or circle. */
   pipStyle?: DicePipStyle;
 
   /** Opacity applied to each pip (0-1). */

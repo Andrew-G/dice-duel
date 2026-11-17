@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   CHALLENGE_HOST,
   CHALLENGE_ORDER,
@@ -16,16 +16,19 @@ import { useHighScore } from "@/hooks/useHighScore";
 import type { Character } from "@/types/Character";
 import type { Matchup } from "@/types/Matchup";
 import type { SceneMessage } from "@/types/Scene";
+import FadeOverlay from "@/components/FadeOverlay";
 import ChallengeView from "./ChallengeView";
 import GameView from "./GameView";
 import MenuView from "./MenuView";
 import RobotSelectView from "./RobotSelectView";
 import SceneView from "./SceneView";
+import SettingsView from "./SettingsView";
 
 type Screen =
   | { name: "menu" }
   | { name: "robotSelect" }
   | { name: "challenge" }
+  | { name: "settings" }
   /** A story scene; `onDone` decides where the player goes once it's over. */
   | {
       name: "scene";
@@ -36,6 +39,15 @@ type Screen =
     }
   /** `round` changes for every new game, which remounts the game view. */
   | { name: "game"; matchup: Matchup; round: number };
+
+/** How long a fade to or from black takes. */
+const FADE_MS = 500;
+
+/**
+ * The black cover between screens: fading in over the old screen, then (if the
+ * new one needs to load) waiting with a spinner, then fading back out.
+ */
+type Cover = "none" | "fadingIn" | "loading";
 
 /** Start fetching the robot's value table early so its first turn isn't delayed. */
 const warmUpRobot = () => {
@@ -48,6 +60,7 @@ const warmUpRobot = () => {
  */
 const DiceDuel = () => {
   const [screen, setScreen] = useState<Screen>({ name: "menu" });
+  const [cover, setCover] = useState<Cover>("none");
   const round = useRef(0);
 
   const diceTheme = useDiceTheme();
@@ -153,13 +166,26 @@ const DiceDuel = () => {
     setScreen({ name: "challenge" });
   };
 
-  /** From the menu: the very first visit starts with the opening scene. */
+  const showSettings = () => setScreen({ name: "settings" });
+
+  /** Lift the black cover once the scene underneath has loaded. */
+  const revealScene = useCallback(() => setCover("none"), []);
+
+  /**
+   * From the menu: the very first visit starts with the opening scene. The
+   * screen fades to black first, then the scene loads behind the black (with a
+   * spinner until its portrait is ready) and fades in.
+   */
   const openChallenge = () => {
     if (challenge.introSeen) return showChallengeHub();
-    playScene(scene.challenge.introduction, CHALLENGE_HOST, () => {
-      challenge.markIntroSeen();
-      showChallengeHub();
-    });
+    setCover("fadingIn");
+    window.setTimeout(() => {
+      setCover("loading");
+      playScene(scene.challenge.introduction, CHALLENGE_HOST, () => {
+        challenge.markIntroSeen();
+        showChallengeHub();
+      });
+    }, FADE_MS);
   };
 
   return (
@@ -170,12 +196,19 @@ const DiceDuel = () => {
             bestScore={highScore.best}
             challengeDefeated={challenge.defeated}
             challengeTotal={challenge.total}
-            diceId={diceTheme.diceId}
-            onSelectDice={diceTheme.select}
             onPlaySolo={playSolo}
             onPlayRobot={showRobotSelect}
             onPlayChallenge={openChallenge}
+            onOpenSettings={showSettings}
+          />
+        )}
+
+        {screen.name === "settings" && (
+          <SettingsView
+            diceId={diceTheme.diceId}
+            onSelectDice={diceTheme.select}
             onResetChallenge={challenge.reset}
+            onBack={showMenu}
           />
         )}
 
@@ -202,6 +235,7 @@ const DiceDuel = () => {
             messages={screen.messages}
             character={screen.character}
             onComplete={screen.onDone}
+            onReady={revealScene}
           />
         )}
 
@@ -228,6 +262,12 @@ const DiceDuel = () => {
           />
         )}
       </div>
+
+      <FadeOverlay
+        isVisible={cover !== "none"}
+        isLoading={cover === "loading"}
+        durationMs={FADE_MS}
+      />
     </main>
   );
 };

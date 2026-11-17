@@ -1,5 +1,6 @@
+import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@/components/Button";
-import DiceThemePicker from "@/components/DiceThemePicker";
 
 type MenuViewProps = {
   /** The player's best finished-game score, if any. */
@@ -7,28 +8,35 @@ type MenuViewProps = {
   /** Challenge progress: opponents beaten out of the total. */
   challengeDefeated: number;
   challengeTotal: number;
-  diceId: string;
-  onSelectDice: (id: string) => void;
   onPlaySolo: () => void;
   onPlayRobot: () => void;
   onPlayChallenge: () => void;
-  /** Wipe Challenge progress and its story scenes, to test from the start. */
-  onResetChallenge: () => void;
+  onOpenSettings: () => void;
 };
 
 const MenuView = ({
   bestScore,
   challengeDefeated,
   challengeTotal,
-  diceId,
-  onSelectDice,
   onPlaySolo,
   onPlayRobot,
   onPlayChallenge,
-  onResetChallenge,
+  onOpenSettings,
 }: MenuViewProps) => (
   <div className="flex flex-col space-y-3 py-4">
-    <h1 className="text-center text-2xl font-bold">Dice Duel</h1>
+    <header>
+      <h1 className="text-center text-2xl font-bold">Dice Duel</h1>
+
+      {/* Pinned to the window's top right corner. */}
+      <Button
+        variant="icon"
+        aria-label="Settings"
+        onClick={onOpenSettings}
+        className="fixed right-4 top-4 z-10"
+      >
+        <FontAwesomeIcon icon={faGear} />
+      </Button>
+    </header>
 
     <Button variant="choice" onClick={onPlaySolo}>
       <span className="block text-lg font-bold">Play Solo</span>
@@ -63,14 +71,6 @@ const MenuView = ({
             : `${challengeTotal} opponents to beat`}
       </span>
     </Button>
-
-    <DiceThemePicker selectedId={diceId} onSelect={onSelectDice} />
-
-    <div className="flex justify-center">
-      <Button variant="small" onClick={onResetChallenge}>
-        Reset challenge progress (testing)
-      </Button>
-    </div>
   </div>
 );
 

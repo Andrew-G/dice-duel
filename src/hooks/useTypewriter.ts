@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
  * Types `text` out one character at a time. Starts over whenever `text`
  * changes. People who prefer reduced motion get the whole text at once.
  */
-export function useTypewriter(text: string, msPerChar = 25) {
+export function useTypewriter(text: string, msPerChar = 5) {
   // Code points, so emoji and the like aren't split in half.
   const chars = useMemo(() => Array.from(text), [text]);
   const [typed, setTyped] = useState({ text, count: 0 });

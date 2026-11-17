@@ -11,6 +11,8 @@ const VARIANT_CLASSES = {
   /** A big, card-like option in a list of choices. */
   choice:
     "w-full rounded-lg border border-white/10 bg-white/5 p-4 text-left hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300 disabled:opacity-40 disabled:hover:bg-white/5",
+  /** A round, icon-only button. Give it an `aria-label`. */
+  icon: "flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300",
 } as const;
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

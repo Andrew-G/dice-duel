@@ -11,6 +11,11 @@ type SceneViewProps = {
   character: Character;
   /** Called after the player continues past the last message. */
   onComplete: () => void;
+  /**
+   * Called once the first portrait has fully loaded. Until then the lines
+   * don't start, so a parent can keep a cover over the scene meanwhile.
+   */
+  onReady?: () => void;
 };
 
 const emotionSrc = (character: Character, emotion: CharacterEmotions) =>
@@ -24,13 +29,50 @@ const emotionSrc = (character: Character, emotion: CharacterEmotions) =>
  * Its state lives and dies with the scene, so mount it with a new `key` for
  * each new scene.
  */
-const SceneView = ({ messages, character, onComplete }: SceneViewProps) => {
+const SceneView = ({
+  messages,
+  character,
+  onComplete,
+  onReady,
+}: SceneViewProps) => {
   const [index, setIndex] = useState(0);
   const [missingSrc, setMissingSrc] = useState<string | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const current = messages[index];
   const isLast = index >= messages.length - 1;
-  const { displayed, isDone, finish } = useTypewriter(current?.message ?? "");
+  const firstSrc = messages[0]
+    ? emotionSrc(character, messages[0].emotion)
+    : "";
+  // Nothing is typed until the first portrait is there to go with it.
+  const { displayed, isDone, finish } = useTypewriter(
+    isReady ? (current?.message ?? "") : ""
+  );
+
+  // Wait for the first portrait to be fully loaded and decoded. If that
+  // expression is missing, wait for the plain portrait it falls back to.
+  useEffect(() => {
+    if (!firstSrc) return;
+    let isCancelled = false;
+    const load = (src: string) => {
+      const image = new Image();
+      image.src = src;
+      return image.decode();
+    };
+    const done = () => {
+      if (!isCancelled) setIsReady(true);
+    };
+    load(firstSrc)
+      .catch(() => load(character.avatarSrc))
+      .then(done, done);
+    return () => {
+      isCancelled = true;
+    };
+  }, [firstSrc, character.avatarSrc]);
+
+  useEffect(() => {
+    if (isReady) onReady?.();
+  }, [isReady, onReady]);
 
   // Load every expression up front so the portrait never flickers on a swap.
   useEffect(() => {
@@ -51,6 +93,7 @@ const SceneView = ({ messages, character, onComplete }: SceneViewProps) => {
   const portrait = missingSrc === src ? character.avatarSrc : src;
 
   const next = () => {
+    if (!isReady) return;
     if (!isDone) return finish();
     if (isLast) return onComplete();
     setIndex(index + 1);
@@ -86,7 +129,9 @@ const SceneView = ({ messages, character, onComplete }: SceneViewProps) => {
           <span className="text-xs text-white/40">
             {index + 1} / {messages.length}
           </span>
-          <Button onClick={next}>Continue</Button>
+          <Button onClick={next} disabled={!isReady}>
+            Continue
+          </Button>
         </div>
       </section>
     </div>
