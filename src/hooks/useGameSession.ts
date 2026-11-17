@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getRandomPhrase, phrases } from "@/constants/lang";
+import { PHRASE_TYPE, getRandomPhrase, phrases } from "@/constants/lang";
 import type { ScoreCategory } from "@/types/Game";
 import type { Matchup } from "@/types/Matchup";
 import type { OpponentController } from "./opponentCore";
@@ -8,6 +8,8 @@ import type { HighScore } from "./useHighScore";
 import { useLiveOpponent } from "./useLiveOpponent";
 import { usePlayerGame } from "./usePlayerGame";
 import { useReplay } from "./useReplay";
+
+export type GameOutcome = "win" | "loss" | "tie";
 
 // Opponents move at a fixed, brisk pace (ms) so you never wait long.
 const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
@@ -19,27 +21,39 @@ const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
  *
  * The state belongs to the game, so mount it with a fresh `key` for each new
  * game rather than resetting it by hand.
+ *
+ * `onGameEnd` is called once, when a versus game finishes, with the player's
+ * outcome (Challenge mode uses it to unlock the next opponent).
  */
 export function useGameSession(
   matchup: Matchup,
   highScore: HighScore,
-  sounds: GameSounds
+  sounds: GameSounds,
+  onGameEnd?: (outcome: GameOutcome) => void
 ) {
   const isVersus = matchup.kind !== "solo";
+  // Live robots (Ratchet, or a Challenge character) have a personality.
+  const character =
+    matchup.kind === "robot" || matchup.kind === "challenge"
+      ? matchup.character
+      : null;
   const [greeting] = useState(() =>
-    isVersus ? getRandomPhrase(phrases.greetings) : null
+    isVersus
+      ? getRandomPhrase(
+          (character?.phrases ?? phrases)[PHRASE_TYPE.GREETINGS]
+        )
+      : null
   );
 
   const replay = useReplay(
     matchup.kind === "recorded" ? matchup.game : null,
     OPPONENT_PACE
   );
-  const robot = useLiveOpponent(
-    matchup.kind === "robot" ? matchup.level.skill : null,
-    OPPONENT_PACE
-  );
-  const opponent: OpponentController =
-    matchup.kind === "robot" ? robot : replay;
+  const robot = useLiveOpponent(character?.botSkill ?? null, {
+    ...OPPONENT_PACE,
+    phrases: character?.phrases,
+  });
+  const opponent: OpponentController = character ? robot : replay;
 
   const isOpponentTurn = isVersus && opponent.isPlaying;
   const player = usePlayerGame({ isPlayerTurn: !isOpponentTurn });
@@ -53,6 +67,26 @@ export function useGameSession(
     scoreSubmitted.current = true;
     submitHighScore(playerTotal);
   }, [player.isFinished, playerTotal, submitHighScore]);
+
+  // --- Result: report it once per finished versus game ----------------------
+  const opponentTotal = opponent.scoreSheet.total ?? 0;
+  const isGameOver = isVersus
+    ? player.isFinished && opponent.isFinished
+    : player.isFinished;
+  const outcome: GameOutcome | null =
+    isVersus && isGameOver
+      ? playerTotal > opponentTotal
+        ? "win"
+        : playerTotal < opponentTotal
+          ? "loss"
+          : "tie"
+      : null;
+  const outcomeReported = useRef(false);
+  useEffect(() => {
+    if (!outcome || outcomeReported.current) return;
+    outcomeReported.current = true;
+    onGameEnd?.(outcome);
+  }, [outcome, onGameEnd]);
 
   // --- Sound effects --------------------------------------------------------
   const { playRoll, playOpponentRoll, playChat } = sounds;
@@ -97,10 +131,12 @@ export function useGameSession(
 
   const opponentTitle =
     matchup.kind === "robot"
-      ? `${matchup.level.label} robot`
-      : matchup.kind === "recorded"
-        ? `${matchup.tier.label} • ${matchup.game.label}`
-        : null;
+      ? `${matchup.character.name} • ${matchup.level.label}`
+      : matchup.kind === "challenge"
+        ? matchup.character.name
+        : matchup.kind === "recorded"
+          ? `${matchup.tier.label} • ${matchup.game.label}`
+          : null;
 
   return {
     player,
@@ -110,12 +146,13 @@ export function useGameSession(
     tray,
     chatMessages,
     opponentTitle,
+    /** Set for live robots; recorded rivals and solo play have none. */
+    character,
     playerTotal,
-    opponentTotal: opponent.scoreSheet.total ?? 0,
-    isGameOver: isVersus
-      ? player.isFinished && opponent.isFinished
-      : player.isFinished,
-    robotError: matchup.kind === "robot" ? robot.error : null,
+    opponentTotal,
+    isGameOver,
+    outcome,
+    robotError: character ? robot.error : null,
     retryRobotTurn: robot.playTurn,
     score,
   };

@@ -6,8 +6,9 @@ import RecordPanel from "@/components/RecordPanel";
 import ScoreCard from "@/components/ScoreCard";
 import Button from "@/components/Button";
 import TurnControls from "@/components/TurnControls";
+import { CHALLENGE_ORDER } from "@/data/opponent/challenge";
 import { TURNS_PER_GAME } from "@/engine/score";
-import { useGameSession } from "@/hooks/useGameSession";
+import { useGameSession, type GameOutcome } from "@/hooks/useGameSession";
 import type { GameSounds } from "@/hooks/useGameSounds";
 import type { HighScore } from "@/hooks/useHighScore";
 import type { Matchup } from "@/types/Matchup";
@@ -19,6 +20,10 @@ type GameViewProps = {
   sounds: GameSounds;
   onRestart: () => void;
   onMenu: () => void;
+  /** Called once when a versus game finishes, with how the player did. */
+  onGameEnd?: (outcome: GameOutcome) => void;
+  /** Challenge mode: head back to the challenge screen after a win. */
+  onChallengeContinue?: () => void;
 };
 
 /**
@@ -32,12 +37,41 @@ const GameView = ({
   sounds,
   onRestart,
   onMenu,
+  onGameEnd,
+  onChallengeContinue,
 }: GameViewProps) => {
-  const session = useGameSession(matchup, highScore, sounds);
-  const { player, opponent, isVersus, isOpponentTurn, tray } = session;
+  const session = useGameSession(matchup, highScore, sounds, onGameEnd);
+  const { player, opponent, isVersus, isOpponentTurn, tray, character } =
+    session;
+  const opponentName = character?.name ?? "Opponent";
+
+  // The tray is shared, so while it's the opponent's turn it rolls their dice.
+  const trayDiceId = isOpponentTurn && character ? character.diceId : diceId;
+
+  // Challenge mode: a win moves on to the next character, anything else is a
+  // rematch against the same one.
+  const challengeResult =
+    matchup.kind === "challenge" && session.outcome
+      ? (() => {
+          const next = CHALLENGE_ORDER[matchup.stage + 1];
+          return session.outcome === "win"
+            ? {
+                note: next
+                  ? `You beat ${opponentName}! ${next.name} is up next.`
+                  : `You beat ${opponentName}! You've conquered the whole Challenge!`,
+                actionLabel: next ? "Next opponent" : "Back to Challenge",
+                onAction: onChallengeContinue ?? onMenu,
+              }
+            : {
+                note: `You need to beat ${opponentName} to move on.`,
+                actionLabel: "Rematch",
+                onAction: onRestart,
+              };
+        })()
+      : null;
 
   const statusText = isOpponentTurn
-    ? "Opponent's turn"
+    ? `${opponentName}'s turn`
     : player.isFinished
       ? "Game over"
       : `Turn ${player.turnNumber} of ${TURNS_PER_GAME} • Rolls left ${player.rollsRemaining}`;
@@ -61,6 +95,7 @@ const GameView = ({
       {session.opponentTitle && (
         <OpponentPanel
           title={session.opponentTitle}
+          character={character}
           mood={opponent.mood}
           turnsCompleted={opponent.turnsCompleted}
           messages={session.chatMessages}
@@ -81,7 +116,7 @@ const GameView = ({
             <GameDice
               dice={tray.dice ?? undefined}
               keepMask={tray.keepMask}
-              diceId={diceId}
+              diceId={character ? character.diceId : trayDiceId}
               isRolling={tray.isRolling}
               onKeepToggle={isOpponentTurn ? undefined : player.toggleKeep}
             />
@@ -95,6 +130,7 @@ const GameView = ({
       <ScoreCard
         player={player.scoreSheet}
         opponent={isVersus ? opponent.scoreSheet : undefined}
+        opponentLabel={opponentName}
         potential={player.potentialScores}
         canScore={player.canScore && !isOpponentTurn}
         onScore={session.score}
@@ -107,7 +143,9 @@ const GameView = ({
             opponentTotal={isVersus ? session.opponentTotal : undefined}
             bestScore={highScore.best}
             isNewBest={highScore.isNewBest}
-            onPlayAgain={onRestart}
+            note={challengeResult?.note}
+            actionLabel={challengeResult?.actionLabel}
+            onAction={challengeResult?.onAction ?? onRestart}
           />
           <RecordPanel turns={player.turns} />
         </>

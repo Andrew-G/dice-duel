@@ -2,10 +2,12 @@ import Bot from "@/components/Bot";
 import Button from "@/components/Button";
 import GameChat from "@/components/GameChat";
 import { TURNS_PER_GAME } from "@/engine/score";
-import type { Mood } from "@/types/Character";
+import type { Character, Mood } from "@/types/Character";
 
 type OpponentPanelProps = {
   title: string;
+  /** The character being played against, if any. */
+  character?: Pick<Character, "name" | "avatarSrc"> | null;
   mood: Mood;
   turnsCompleted: number;
   messages: string[];
@@ -17,6 +19,7 @@ type OpponentPanelProps = {
 /** The opponent's avatar, progress and chat, plus the robot's load error. */
 const OpponentPanel = ({
   title,
+  character,
   mood,
   turnsCompleted,
   messages,
@@ -25,7 +28,7 @@ const OpponentPanel = ({
 }: OpponentPanelProps) => (
   <>
     <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start">
-      <Bot mood={mood} />
+      <Bot mood={mood} avatarSrc={character?.avatarSrc} name={character?.name} />
       <div className="flex w-full flex-1 flex-col space-y-2">
         <p className="text-sm text-indigo-300">
           {title} • {turnsCompleted} of {TURNS_PER_GAME} turns played

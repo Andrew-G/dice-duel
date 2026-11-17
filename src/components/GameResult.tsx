@@ -7,7 +7,11 @@ type GameResultProps = {
   /** Best finished-game score so far, if any. */
   bestScore: number | null;
   isNewBest: boolean;
-  onPlayAgain: () => void;
+  /** Extra line under the verdict, e.g. what happens next in Challenge mode. */
+  note?: string;
+  /** The main button. Defaults to "Play again". */
+  actionLabel?: string;
+  onAction: () => void;
 };
 
 const getVerdict = (playerTotal: number, opponentTotal: number) => {
@@ -16,13 +20,15 @@ const getVerdict = (playerTotal: number, opponentTotal: number) => {
   return "It's a tie.";
 };
 
-/** Shown when a game ends: the result, the high score and "Play again". */
+/** Shown when a game ends: the result, the high score and the next step. */
 const GameResult = ({
   playerTotal,
   opponentTotal,
   bestScore,
   isNewBest,
-  onPlayAgain,
+  note,
+  actionLabel = "Play again",
+  onAction,
 }: GameResultProps) => (
   <div
     aria-live="polite"
@@ -33,6 +39,7 @@ const GameResult = ({
         ? `Final score: ${playerTotal}`
         : `${getVerdict(playerTotal, opponentTotal)} ${playerTotal} to ${opponentTotal}`}
     </p>
+    {note && <p className="text-indigo-200">{note}</p>}
     {isNewBest ? (
       <p className="text-indigo-300">New high score!</p>
     ) : (
@@ -40,7 +47,7 @@ const GameResult = ({
         <p className="text-sm text-white/60">High score: {bestScore}</p>
       )
     )}
-    <Button onClick={onPlayAgain}>Play again</Button>
+    <Button onClick={onAction}>{actionLabel}</Button>
   </div>
 );
 

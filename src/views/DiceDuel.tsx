@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { recordedGames } from "@/data/games";
+import { CHALLENGE_ORDER, robotCharacter } from "@/data/opponent/challenge";
 import {
   buildDifficultyTiers,
   pickGameFromTier,
@@ -9,11 +10,13 @@ import {
 } from "@/engine/difficulty";
 import { ROBOT_LEVELS, type RobotLevel } from "@/engine/solver/levels";
 import { loadSolverTable } from "@/engine/solver/table";
+import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useDiceTheme } from "@/hooks/useDiceTheme";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { useHighScore } from "@/hooks/useHighScore";
 import type { Matchup } from "@/types/Matchup";
 import type { RecordedGame } from "@/types/Recording";
+import ChallengeView from "./ChallengeView";
 import DifficultyView from "./DifficultyView";
 import GameView from "./GameView";
 import MenuView from "./MenuView";
@@ -22,6 +25,7 @@ type Screen =
   | { name: "menu" }
   | { name: "recordedSelect" }
   | { name: "robotSelect" }
+  | { name: "challenge" }
   /** `round` changes for every new game, which remounts the game view. */
   | { name: "game"; matchup: Matchup; round: number };
 
@@ -43,6 +47,7 @@ const DiceDuel = () => {
   const diceTheme = useDiceTheme();
   const highScore = useHighScore();
   const sounds = useGameSounds();
+  const challenge = useChallengeProgress();
   const { clearNewBest } = highScore;
 
   const startGame = (matchup: Matchup) => {
@@ -62,7 +67,17 @@ const DiceDuel = () => {
 
   const playRobot = (level: RobotLevel) => {
     warmUpRobot();
-    startGame({ kind: "robot", level });
+    // Robot games are always against Ratchet, at the chosen skill.
+    startGame({ kind: "robot", level, character: robotCharacter(level) });
+  };
+
+  const playChallenge = (stage: number) => {
+    warmUpRobot();
+    startGame({
+      kind: "challenge",
+      character: CHALLENGE_ORDER[stage],
+      stage,
+    });
   };
 
   /** Same kind of game again (a recorded opponent picks a different game). */
@@ -74,6 +89,8 @@ const DiceDuel = () => {
         return playRecorded(matchup.tier, matchup.game);
       case "robot":
         return playRobot(matchup.level);
+      case "challenge":
+        return playChallenge(matchup.stage);
     }
   };
 
@@ -84,6 +101,11 @@ const DiceDuel = () => {
     setScreen({ name: "robotSelect" });
   };
 
+  const showChallenge = () => {
+    warmUpRobot(); // warm up while the player reads who's next
+    setScreen({ name: "challenge" });
+  };
+
   return (
     <main className="flex min-h-screen w-full items-center bg-gradient-to-b from-violet-950/[0.9] to-indigo-950/[0.75]">
       <div className="m-auto flex w-full max-w-full flex-col space-y-4 rounded-lg border border-black/[.75] bg-gradient-to-b from-black/[.5] to-black p-4 text-white shadow-2xl md:w-[40rem]">
@@ -91,11 +113,14 @@ const DiceDuel = () => {
           <MenuView
             bestScore={highScore.best}
             canPlayRecorded={TIERS.length > 0}
+            challengeDefeated={challenge.defeated}
+            challengeTotal={challenge.total}
             diceId={diceTheme.diceId}
             onSelectDice={diceTheme.select}
             onPlaySolo={playSolo}
             onPlayRecorded={() => setScreen({ name: "recordedSelect" })}
             onPlayRobot={showRobotSelect}
+            onPlayChallenge={showChallenge}
           />
         )}
 
@@ -118,6 +143,15 @@ const DiceDuel = () => {
           />
         )}
 
+        {screen.name === "challenge" && (
+          <ChallengeView
+            defeated={challenge.defeated}
+            onStart={playChallenge}
+            onReset={challenge.reset}
+            onBack={showMenu}
+          />
+        )}
+
         {screen.name === "game" && (
           <GameView
             key={screen.round}
@@ -127,6 +161,13 @@ const DiceDuel = () => {
             sounds={sounds}
             onRestart={() => restart(screen.matchup)}
             onMenu={showMenu}
+            onChallengeContinue={showChallenge}
+            onGameEnd={(outcome) => {
+              // Only a win unlocks the next opponent.
+              if (screen.matchup.kind === "challenge" && outcome === "win") {
+                challenge.recordWin(screen.matchup.stage);
+              }
+            }}
           />
         )}
       </div>

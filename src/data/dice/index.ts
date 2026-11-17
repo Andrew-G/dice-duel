@@ -14,6 +14,8 @@ import { royalAmethystTheme } from "./themes/royal-amethyst";
 import { frostTheme } from "./themes/frost";
 import { midnightNeonTheme } from "./themes/midnight-neon";
 import { starlightTheme } from "./themes/starlight";
+import { bonesTheme } from "./themes/bones";
+import { obsidianRedTheme } from "./themes/obsidian-red";
 
 export const DICE_THEMES: DiceTheme[] = [
   ivoryTheme,
@@ -33,10 +35,19 @@ export const DICE_THEMES: DiceTheme[] = [
   starlightTheme,
 ];
 
+/**
+ * Dice that only opponent characters use (Anvil, Enforcer). They resolve by id
+ * but are not in DICE_THEMES, so they never show up in the player's picker.
+ */
+const OPPONENT_ONLY_THEMES: DiceTheme[] = [bonesTheme, obsidianRedTheme];
+
 export const DEFAULT_DICE_ID = DICE_THEMES[0].id;
 
 /** Fast O(1) lookup dictionary for themes by their ID. */
-export const themesById: Record<string, DiceTheme> = DICE_THEMES.reduce(
+export const themesById: Record<string, DiceTheme> = [
+  ...DICE_THEMES,
+  ...OPPONENT_ONLY_THEMES,
+].reduce(
   (acc, theme) => {
     acc[theme.id] = theme;
     return acc;

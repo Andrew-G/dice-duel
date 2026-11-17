@@ -12,6 +12,7 @@ import {
   loadSolverTable,
   type SolverTable,
 } from "@/engine/solver/table";
+import type { PHRASES } from "@/constants/lang";
 import type { Mood } from "@/types/Character";
 import type { Dice, KeepMask } from "@/types/Dice";
 import { createEmptyScoreSheet, type ScoreCategory } from "@/types/Game";
@@ -28,6 +29,8 @@ export interface UseLiveOpponentOptions {
   rollMs?: number;
   /** Pause between each visible step: result -> hold -> roll -> score (ms). Default 600. */
   stepMs?: number;
+  /** The character's lines for reacting to scores. Defaults to the generic set. */
+  phrases?: PHRASES;
   /** Injectable for tests. */
   rng?: () => number;
   /** Called after each turn has fully finished. */
@@ -53,6 +56,7 @@ export function useLiveOpponent(
   {
     rollMs = 600,
     stepMs = 600,
+    phrases,
     rng = Math.random,
     onTurnComplete,
   }: UseLiveOpponentOptions = {}
@@ -165,7 +169,7 @@ export function useLiveOpponent(
         sheetRef.current = applyScore(sheet, dice, category);
         dispatch({ type: "SCORE", dice, category });
 
-        const reaction = reactToScore(category, points);
+        const reaction = reactToScore(category, points, phrases);
         setMood(reaction.mood);
         if (reaction.message) {
           const line = reaction.message;
@@ -202,7 +206,7 @@ export function useLiveOpponent(
         }
       );
     }
-  }, [skill, rollMs, stepMs, rng]);
+  }, [skill, rollMs, stepMs, phrases, rng]);
 
   const totalTurns = skill ? TURNS_PER_GAME : 0;
 

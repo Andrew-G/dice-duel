@@ -23,9 +23,13 @@ const imgByMood: Record<Mood, string> = {
 
 type BotProps = {
   mood: Mood;
+  /** A character's portrait. Defaults to the generic droid. */
+  avatarSrc?: string;
+  /** The character's name, used as the portrait's alt text. */
+  name?: string;
 };
 
-const Bot = ({ mood }: BotProps) => {
+const Bot = ({ mood, avatarSrc = "/img/droid.png", name = "droid" }: BotProps) => {
   return (
     <div className="relative flex items-center content-center w-40 h-40">
       <img
@@ -33,7 +37,7 @@ const Bot = ({ mood }: BotProps) => {
         alt={mood}
         className="absolute -top-1 right-0 w-14 opacity-90"
       />
-      <img src="/img/droid.png" alt="droid" className="w-full" />
+      <img src={avatarSrc} alt={name} className="w-full" />
     </div>
   );
 };

@@ -1,4 +1,9 @@
-import { getRandomPhrase, phrases } from "@/constants/lang";
+import {
+  PHRASE_TYPE,
+  getRandomPhrase,
+  phrases as defaultPhrases,
+  type PHRASES,
+} from "@/constants/lang";
 import {
   ROLLS_PER_TURN,
   isUpperCategory,
@@ -146,18 +151,20 @@ function isGoodScore(category: ScoreCategory, score: number): boolean {
   }
 }
 
+/** `phrases` is the character's own lines; recorded rivals use the generic set. */
 export function reactToScore(
   category: ScoreCategory,
-  score: number
+  score: number,
+  phrases: PHRASES = defaultPhrases
 ): { mood: Mood; message?: string } {
   if (category === "yahtzee" && score > 0) {
-    return { mood: "woah", message: getRandomPhrase(phrases.success) };
+    return { mood: "woah", message: getRandomPhrase(phrases[PHRASE_TYPE.SUCCESS]) };
   }
   if (score === 0) {
-    return { mood: "sad", message: getRandomPhrase(phrases.failure) };
+    return { mood: "sad", message: getRandomPhrase(phrases[PHRASE_TYPE.FAILURE]) };
   }
   if (isGoodScore(category, score)) {
-    return { mood: "cool", message: getRandomPhrase(phrases.success) };
+    return { mood: "cool", message: getRandomPhrase(phrases[PHRASE_TYPE.SUCCESS]) };
   }
   return { mood: "neutral" };
 }

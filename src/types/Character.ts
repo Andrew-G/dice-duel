@@ -27,8 +27,16 @@ export type Character = {
   name: string;
   avatarSrc: string;
   description: string;
+  introduction: string;
   brief?: string;
   botSkill: BotSkill;
   diceId: string;
   phrases: PHRASES;
+}
+
+export enum CharacterEmotions {
+  DEFAULT = 'default',
+  SUCCESS = 'success',
+  FAILURE = 'failure',
+  THINKING = 'thinking'
 }
