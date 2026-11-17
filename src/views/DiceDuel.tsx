@@ -2,7 +2,12 @@
 
 import { useRef, useState } from "react";
 import { recordedGames } from "@/data/games";
-import { CHALLENGE_ORDER, robotCharacter } from "@/data/opponent/challenge";
+import {
+  CHALLENGE_HOST,
+  CHALLENGE_ORDER,
+  robotCharacter,
+} from "@/data/opponent/challenge";
+import { scene } from "@/data/scene";
 import {
   buildDifficultyTiers,
   pickGameFromTier,
@@ -10,22 +15,34 @@ import {
 } from "@/engine/difficulty";
 import { ROBOT_LEVELS, type RobotLevel } from "@/engine/solver/levels";
 import { loadSolverTable } from "@/engine/solver/table";
+import type { GameOutcome } from "@/hooks/useGameSession";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useDiceTheme } from "@/hooks/useDiceTheme";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { useHighScore } from "@/hooks/useHighScore";
+import type { Character } from "@/types/Character";
 import type { Matchup } from "@/types/Matchup";
 import type { RecordedGame } from "@/types/Recording";
+import type { SceneMessage } from "@/types/Scene";
 import ChallengeView from "./ChallengeView";
 import DifficultyView from "./DifficultyView";
 import GameView from "./GameView";
 import MenuView from "./MenuView";
+import SceneView from "./SceneView";
 
 type Screen =
   | { name: "menu" }
   | { name: "recordedSelect" }
   | { name: "robotSelect" }
   | { name: "challenge" }
+  /** A story scene; `onDone` decides where the player goes once it's over. */
+  | {
+      name: "scene";
+      messages: SceneMessage[];
+      character: Character;
+      onDone: () => void;
+      round: number;
+    }
   /** `round` changes for every new game, which remounts the game view. */
   | { name: "game"; matchup: Matchup; round: number };
 
@@ -71,12 +88,63 @@ const DiceDuel = () => {
     startGame({ kind: "robot", level, character: robotCharacter(level) });
   };
 
+  /** Start the match itself, with no scene first (also used for rematches). */
   const playChallenge = (stage: number) => {
     warmUpRobot();
     startGame({
       kind: "challenge",
       character: CHALLENGE_ORDER[stage],
       stage,
+    });
+  };
+
+  const playScene = (
+    messages: SceneMessage[],
+    character: Character,
+    onDone: () => void
+  ) => {
+    round.current += 1; // a new scene remounts the scene view
+    setScreen({
+      name: "scene",
+      messages,
+      character,
+      onDone,
+      round: round.current,
+    });
+  };
+
+  /** Before facing a character, they introduce themselves. */
+  const startChallengeFight = (stage: number) => {
+    warmUpRobot();
+    const character = CHALLENGE_ORDER[stage];
+    playScene(scene.challenge[character.id].introduction, character, () =>
+      playChallenge(stage)
+    );
+  };
+
+  /**
+   * After a Challenge match, the character reacts to the result. A loss (or
+   * a tie) leads straight into a rematch; a win goes back to the ladder, via
+   * the Challenge's ending if that was the last opponent.
+   */
+  const finishChallengeGame = (stage: number, outcome: GameOutcome) => {
+    const character = CHALLENGE_ORDER[stage];
+    const scenes = scene.challenge[character.id];
+
+    if (outcome !== "win") {
+      return playScene(scenes.failure, character, () => playChallenge(stage));
+    }
+
+    playScene(scenes.success, character, () => {
+      const wonEverything = stage === CHALLENGE_ORDER.length - 1;
+      if (wonEverything && !challenge.completeSeen) {
+        playScene(scene.challenge.complete, CHALLENGE_HOST, () => {
+          challenge.markCompleteSeen();
+          showChallengeHub();
+        });
+      } else {
+        showChallengeHub();
+      }
     });
   };
 
@@ -101,9 +169,18 @@ const DiceDuel = () => {
     setScreen({ name: "robotSelect" });
   };
 
-  const showChallenge = () => {
+  const showChallengeHub = () => {
     warmUpRobot(); // warm up while the player reads who's next
     setScreen({ name: "challenge" });
+  };
+
+  /** From the menu: the very first visit starts with the opening scene. */
+  const openChallenge = () => {
+    if (challenge.introSeen) return showChallengeHub();
+    playScene(scene.challenge.introduction, CHALLENGE_HOST, () => {
+      challenge.markIntroSeen();
+      showChallengeHub();
+    });
   };
 
   return (
@@ -120,7 +197,8 @@ const DiceDuel = () => {
             onPlaySolo={playSolo}
             onPlayRecorded={() => setScreen({ name: "recordedSelect" })}
             onPlayRobot={showRobotSelect}
-            onPlayChallenge={showChallenge}
+            onPlayChallenge={openChallenge}
+            onResetChallenge={challenge.reset}
           />
         )}
 
@@ -146,9 +224,18 @@ const DiceDuel = () => {
         {screen.name === "challenge" && (
           <ChallengeView
             defeated={challenge.defeated}
-            onStart={playChallenge}
+            onStart={startChallengeFight}
             onReset={challenge.reset}
             onBack={showMenu}
+          />
+        )}
+
+        {screen.name === "scene" && (
+          <SceneView
+            key={screen.round}
+            messages={screen.messages}
+            character={screen.character}
+            onComplete={screen.onDone}
           />
         )}
 
@@ -161,7 +248,11 @@ const DiceDuel = () => {
             sounds={sounds}
             onRestart={() => restart(screen.matchup)}
             onMenu={showMenu}
-            onChallengeContinue={showChallenge}
+            onChallengeContinue={(outcome) => {
+              if (screen.matchup.kind === "challenge") {
+                finishChallengeGame(screen.matchup.stage, outcome);
+              }
+            }}
             onGameEnd={(outcome) => {
               // Only a win unlocks the next opponent.
               if (screen.matchup.kind === "challenge" && outcome === "win") {

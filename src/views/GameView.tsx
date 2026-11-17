@@ -22,8 +22,8 @@ type GameViewProps = {
   onMenu: () => void;
   /** Called once when a versus game finishes, with how the player did. */
   onGameEnd?: (outcome: GameOutcome) => void;
-  /** Challenge mode: head back to the challenge screen after a win. */
-  onChallengeContinue?: () => void;
+  /** Challenge mode: move on from the result, which plays the character's reaction. */
+  onChallengeContinue?: (outcome: GameOutcome) => void;
 };
 
 /**
@@ -48,24 +48,28 @@ const GameView = ({
   // The tray is shared, so while it's the opponent's turn it rolls their dice.
   const trayDiceId = isOpponentTurn && character ? character.diceId : diceId;
 
-  // Challenge mode: a win moves on to the next character, anything else is a
-  // rematch against the same one.
+  // Challenge mode: either way, Continue plays the character's reaction. After
+  // that a win moves on to the next character and anything else is a rematch.
   const challengeResult =
     matchup.kind === "challenge" && session.outcome
       ? (() => {
+          const outcome = session.outcome;
           const next = CHALLENGE_ORDER[matchup.stage + 1];
-          return session.outcome === "win"
+          const onAction = onChallengeContinue
+            ? () => onChallengeContinue(outcome)
+            : onMenu;
+          return outcome === "win"
             ? {
                 note: next
                   ? `You beat ${opponentName}! ${next.name} is up next.`
                   : `You beat ${opponentName}! You've conquered the whole Challenge!`,
-                actionLabel: next ? "Next opponent" : "Back to Challenge",
-                onAction: onChallengeContinue ?? onMenu,
+                actionLabel: "Continue",
+                onAction,
               }
             : {
                 note: `You need to beat ${opponentName} to move on.`,
-                actionLabel: "Rematch",
-                onAction: onRestart,
+                actionLabel: "Continue",
+                onAction,
               };
         })()
       : null;

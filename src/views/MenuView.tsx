@@ -15,6 +15,8 @@ type MenuViewProps = {
   onPlayRecorded: () => void;
   onPlayRobot: () => void;
   onPlayChallenge: () => void;
+  /** Wipe Challenge progress and its story scenes, to test from the start. */
+  onResetChallenge: () => void;
 };
 
 const MenuView = ({
@@ -28,6 +30,7 @@ const MenuView = ({
   onPlayRecorded,
   onPlayRobot,
   onPlayChallenge,
+  onResetChallenge,
 }: MenuViewProps) => (
   <div className="flex flex-col space-y-3 py-4">
     <h1 className="text-center text-2xl font-bold">Dice Duel</h1>
@@ -78,6 +81,12 @@ const MenuView = ({
     </Button>
 
     <DiceThemePicker selectedId={diceId} onSelect={onSelectDice} />
+
+    <div className="flex justify-center">
+      <Button variant="small" onClick={onResetChallenge}>
+        Reset challenge progress (testing)
+      </Button>
+    </div>
   </div>
 );
 

@@ -20,3 +20,9 @@ export const robotCharacter = (level: RobotLevel): Character => ({
   ...RATCHET,
   botSkill: level.skill,
 });
+
+/**
+ * Who speaks the generic Challenge scenes (the opening, and the ending), the
+ * ones that don't belong to any one opponent.
+ */
+export const CHALLENGE_HOST: Character = RATCHET;
