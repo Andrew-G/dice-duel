@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { PHRASE_TYPE, getRandomPhrase, phrases } from "@/constants/lang";
+import { PHRASE_TYPE, getRandomPhrase } from "@/constants/lang";
 import type { ScoreCategory } from "@/types/Game";
 import type { Matchup } from "@/types/Matchup";
-import type { OpponentController } from "./opponentCore";
 import type { GameSounds } from "./useGameSounds";
 import type { HighScore } from "./useHighScore";
 import { useLiveOpponent } from "./useLiveOpponent";
 import { usePlayerGame } from "./usePlayerGame";
-import { useReplay } from "./useReplay";
 
 export type GameOutcome = "win" | "loss" | "tie";
 
@@ -15,9 +13,8 @@ export type GameOutcome = "win" | "loss" | "tie";
 const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
 
 /**
- * Everything that happens during one game: the player, the opponent (a
- * replayed recording or the live robot), turn-taking, sound effects and
- * recording the high score.
+ * Everything that happens during one game: the player, the live robot
+ * opponent (if any), turn-taking, sound effects and recording the high score.
  *
  * The state belongs to the game, so mount it with a fresh `key` for each new
  * game rather than resetting it by hand.
@@ -31,29 +28,17 @@ export function useGameSession(
   sounds: GameSounds,
   onGameEnd?: (outcome: GameOutcome) => void
 ) {
-  const isVersus = matchup.kind !== "solo";
-  // Live robots (Ratchet, or a Challenge character) have a personality.
-  const character =
-    matchup.kind === "robot" || matchup.kind === "challenge"
-      ? matchup.character
-      : null;
+  // Every versus game is against a live robot with a personality.
+  const character = matchup.kind === "solo" ? null : matchup.character;
+  const isVersus = character !== null;
   const [greeting] = useState(() =>
-    isVersus
-      ? getRandomPhrase(
-          (character?.phrases ?? phrases)[PHRASE_TYPE.GREETINGS]
-        )
-      : null
+    character ? getRandomPhrase(character.phrases[PHRASE_TYPE.GREETINGS]) : null
   );
 
-  const replay = useReplay(
-    matchup.kind === "recorded" ? matchup.game : null,
-    OPPONENT_PACE
-  );
-  const robot = useLiveOpponent(character?.botSkill ?? null, {
+  const opponent = useLiveOpponent(character?.botSkill ?? null, {
     ...OPPONENT_PACE,
     phrases: character?.phrases,
   });
-  const opponent: OpponentController = character ? robot : replay;
 
   const isOpponentTurn = isVersus && opponent.isPlaying;
   const player = usePlayerGame({ isPlayerTurn: !isOpponentTurn });
@@ -129,15 +114,6 @@ export function useGameSession(
     [greeting, opponent.messages]
   );
 
-  const opponentTitle =
-    matchup.kind === "robot"
-      ? `${matchup.character.name} • ${matchup.level.label}`
-      : matchup.kind === "challenge"
-        ? matchup.character.name
-        : matchup.kind === "recorded"
-          ? `${matchup.tier.label} • ${matchup.game.label}`
-          : null;
-
   return {
     player,
     opponent,
@@ -145,15 +121,14 @@ export function useGameSession(
     isOpponentTurn,
     tray,
     chatMessages,
-    opponentTitle,
-    /** Set for live robots; recorded rivals and solo play have none. */
+    /** Set for versus games; solo play has none. */
     character,
     playerTotal,
     opponentTotal,
     isGameOver,
     outcome,
-    robotError: character ? robot.error : null,
-    retryRobotTurn: robot.playTurn,
+    robotError: character ? opponent.error : null,
+    retryRobotTurn: opponent.playTurn,
     score,
   };
 }

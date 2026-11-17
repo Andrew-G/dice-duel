@@ -46,7 +46,6 @@ export interface UseLiveOpponentOptions {
  * hold and where to score using the dynamic-programming solver, at the given
  * skill (see engine/solver/levels.ts). Pass `null` to disable it.
  *
- * Exposes the same controller as `useReplay`, so the page can use either.
  * `playTurn()` plays one whole turn at a fixed pace (roll -> hold -> roll ->
  * hold -> roll -> score). The value table is fetched on first use; if that
  * fails, `error` is set and calling `playTurn()` again retries.

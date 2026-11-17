@@ -20,7 +20,7 @@ import {
 
 export const NO_KEEPS: KeepMask = [0, 0, 0, 0, 0];
 
-/** What the page needs from any opponent, whether replayed or live. */
+/** What the page needs from the opponent. */
 export interface OpponentController {
   // What to draw
   dice: Dice | null;
@@ -151,7 +151,7 @@ function isGoodScore(category: ScoreCategory, score: number): boolean {
   }
 }
 
-/** `phrases` is the character's own lines; recorded rivals use the generic set. */
+/** `phrases` is the character's own lines; defaults to the generic set. */
 export function reactToScore(
   category: ScoreCategory,
   score: number,

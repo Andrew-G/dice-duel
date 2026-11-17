@@ -96,9 +96,9 @@ const GameView = ({
         </div>
       </div>
 
-      {session.opponentTitle && (
+      {character && (
         <OpponentPanel
-          title={session.opponentTitle}
+          title={character.name}
           character={character}
           mood={opponent.mood}
           turnsCompleted={opponent.turnsCompleted}

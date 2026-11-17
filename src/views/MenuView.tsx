@@ -4,15 +4,12 @@ import DiceThemePicker from "@/components/DiceThemePicker";
 type MenuViewProps = {
   /** The player's best finished-game score, if any. */
   bestScore: number | null;
-  /** False when there are no recorded games to play against. */
-  canPlayRecorded: boolean;
   /** Challenge progress: opponents beaten out of the total. */
   challengeDefeated: number;
   challengeTotal: number;
   diceId: string;
   onSelectDice: (id: string) => void;
   onPlaySolo: () => void;
-  onPlayRecorded: () => void;
   onPlayRobot: () => void;
   onPlayChallenge: () => void;
   /** Wipe Challenge progress and its story scenes, to test from the start. */
@@ -21,13 +18,11 @@ type MenuViewProps = {
 
 const MenuView = ({
   bestScore,
-  canPlayRecorded,
   challengeDefeated,
   challengeTotal,
   diceId,
   onSelectDice,
   onPlaySolo,
-  onPlayRecorded,
   onPlayRobot,
   onPlayChallenge,
   onResetChallenge,
@@ -47,21 +42,10 @@ const MenuView = ({
       )}
     </Button>
 
-    <Button
-      variant="choice"
-      onClick={onPlayRecorded}
-      disabled={!canPlayRecorded}
-    >
-      <span className="block text-lg font-bold">Play vs Opponent</span>
-      <span className="block text-sm text-white/70">
-        Challenge a rival from a game played earlier. Out-roll them to win!
-      </span>
-    </Button>
-
     <Button variant="choice" onClick={onPlayRobot}>
-      <span className="block text-lg font-bold">Play vs Robot</span>
+      <span className="block text-lg font-bold">Quick Battle</span>
       <span className="block text-sm text-white/70">
-        A live rival that runs the numbers on every roll. Can you out-think it?
+        Battle against a rival robot.
       </span>
     </Button>
 

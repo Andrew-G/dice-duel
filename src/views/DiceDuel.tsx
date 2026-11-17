@@ -1,19 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { recordedGames } from "@/data/games";
 import {
   CHALLENGE_HOST,
   CHALLENGE_ORDER,
-  robotCharacter,
+  availableRobots,
 } from "@/data/opponent/challenge";
 import { scene } from "@/data/scene";
-import {
-  buildDifficultyTiers,
-  pickGameFromTier,
-  type DifficultyTier,
-} from "@/engine/difficulty";
-import { ROBOT_LEVELS, type RobotLevel } from "@/engine/solver/levels";
 import { loadSolverTable } from "@/engine/solver/table";
 import type { GameOutcome } from "@/hooks/useGameSession";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
@@ -22,17 +15,15 @@ import { useGameSounds } from "@/hooks/useGameSounds";
 import { useHighScore } from "@/hooks/useHighScore";
 import type { Character } from "@/types/Character";
 import type { Matchup } from "@/types/Matchup";
-import type { RecordedGame } from "@/types/Recording";
 import type { SceneMessage } from "@/types/Scene";
 import ChallengeView from "./ChallengeView";
-import DifficultyView from "./DifficultyView";
 import GameView from "./GameView";
 import MenuView from "./MenuView";
+import RobotSelectView from "./RobotSelectView";
 import SceneView from "./SceneView";
 
 type Screen =
   | { name: "menu" }
-  | { name: "recordedSelect" }
   | { name: "robotSelect" }
   | { name: "challenge" }
   /** A story scene; `onDone` decides where the player goes once it's over. */
@@ -45,8 +36,6 @@ type Screen =
     }
   /** `round` changes for every new game, which remounts the game view. */
   | { name: "game"; matchup: Matchup; round: number };
-
-const TIERS = buildDifficultyTiers(recordedGames);
 
 /** Start fetching the robot's value table early so its first turn isn't delayed. */
 const warmUpRobot = () => {
@@ -75,17 +64,9 @@ const DiceDuel = () => {
 
   const playSolo = () => startGame({ kind: "solo" });
 
-  const playRecorded = (tier: DifficultyTier, previous?: RecordedGame) =>
-    startGame({
-      kind: "recorded",
-      tier,
-      game: pickGameFromTier(tier, previous),
-    });
-
-  const playRobot = (level: RobotLevel) => {
+  const playRobot = (character: Character) => {
     warmUpRobot();
-    // Robot games are always against Ratchet, at the chosen skill.
-    startGame({ kind: "robot", level, character: robotCharacter(level) });
+    startGame({ kind: "robot", character });
   };
 
   /** Start the match itself, with no scene first (also used for rematches). */
@@ -148,15 +129,13 @@ const DiceDuel = () => {
     });
   };
 
-  /** Same kind of game again (a recorded opponent picks a different game). */
+  /** Same kind of game again, against the same opponent. */
   const restart = (matchup: Matchup) => {
     switch (matchup.kind) {
       case "solo":
         return playSolo();
-      case "recorded":
-        return playRecorded(matchup.tier, matchup.game);
       case "robot":
-        return playRobot(matchup.level);
+        return playRobot(matchup.character);
       case "challenge":
         return playChallenge(matchup.stage);
     }
@@ -189,33 +168,20 @@ const DiceDuel = () => {
         {screen.name === "menu" && (
           <MenuView
             bestScore={highScore.best}
-            canPlayRecorded={TIERS.length > 0}
             challengeDefeated={challenge.defeated}
             challengeTotal={challenge.total}
             diceId={diceTheme.diceId}
             onSelectDice={diceTheme.select}
             onPlaySolo={playSolo}
-            onPlayRecorded={() => setScreen({ name: "recordedSelect" })}
             onPlayRobot={showRobotSelect}
             onPlayChallenge={openChallenge}
             onResetChallenge={challenge.reset}
           />
         )}
 
-        {screen.name === "recordedSelect" && (
-          <DifficultyView
-            title="Choose your opponent"
-            options={TIERS}
-            onSelect={(tier) => playRecorded(tier)}
-            onBack={showMenu}
-          />
-        )}
-
         {screen.name === "robotSelect" && (
-          <DifficultyView
-            title="Choose your robot"
-            options={ROBOT_LEVELS}
-            approximate
+          <RobotSelectView
+            robots={availableRobots(challenge.defeated)}
             onSelect={playRobot}
             onBack={showMenu}
           />

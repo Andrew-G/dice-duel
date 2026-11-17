@@ -1,4 +1,3 @@
-import type { RobotLevel } from "@/engine/solver/levels";
 import type { Character } from "@/types/Character";
 import { CHARACTERS, RATCHET } from "./characters";
 
@@ -13,13 +12,14 @@ export const CHALLENGE_ORDER: readonly Character[] = [...CHARACTERS].sort(
 );
 
 /**
- * "Play vs Robot" always faces Ratchet, but with the skill the player picked
- * instead of his own.
+ * Who "Quick Battle" offers, in ladder order: every opponent the player has
+ * beaten in Challenge (the first `defeated` of them), plus Ratchet, who is
+ * always available.
  */
-export const robotCharacter = (level: RobotLevel): Character => ({
-  ...RATCHET,
-  botSkill: level.skill,
-});
+export const availableRobots = (defeated: number): Character[] =>
+  CHALLENGE_ORDER.filter(
+    (character, index) => index < defeated || character.id === RATCHET.id
+  );
 
 /**
  * Who speaks the generic Challenge scenes (the opening, and the ending), the
