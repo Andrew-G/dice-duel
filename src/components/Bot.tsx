@@ -29,14 +29,18 @@ type BotProps = {
   name?: string;
 };
 
-const Bot = ({ mood, avatarSrc = "/img/droid.png", name = "droid" }: BotProps) => {
+const Bot = ({
+  mood,
+  avatarSrc = "/img/droid.png",
+  name = "droid",
+}: BotProps) => {
   return (
     <div className="relative flex items-center content-center w-40 h-40">
-      <img
+      {/* <img
         src={imgByMood[mood]}
         alt={mood}
         className="absolute -top-1 right-0 w-14 opacity-90"
-      />
+      /> */}
       <img src={avatarSrc} alt={name} className="w-full" />
     </div>
   );

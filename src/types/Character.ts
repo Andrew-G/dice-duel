@@ -32,11 +32,32 @@ export type Character = {
   botSkill: BotSkill;
   diceId: string;
   phrases: PHRASES;
-}
+};
 
 export enum CharacterEmotions {
-  DEFAULT = 'default',
-  SUCCESS = 'success',
-  FAILURE = 'failure',
-  THINKING = 'thinking'
+  DEFAULT = "default",
+  SUCCESS = "success",
+  FAILURE = "failure",
+  THINKING = "thinking",
 }
+
+export const reactionMap: Record<Mood, CharacterEmotions> = {
+  angry: CharacterEmotions.FAILURE,
+  ay: CharacterEmotions.FAILURE,
+  barf: CharacterEmotions.FAILURE,
+  blush: CharacterEmotions.SUCCESS,
+  confused: CharacterEmotions.THINKING,
+  cool: CharacterEmotions.SUCCESS,
+  cry: CharacterEmotions.FAILURE,
+  dying: CharacterEmotions.FAILURE,
+  eyeroll: CharacterEmotions.DEFAULT,
+  happy: CharacterEmotions.SUCCESS,
+  heart: CharacterEmotions.SUCCESS,
+  laugh: CharacterEmotions.SUCCESS,
+  neutral: CharacterEmotions.DEFAULT,
+  sad: CharacterEmotions.FAILURE,
+  think: CharacterEmotions.THINKING,
+  what: CharacterEmotions.THINKING,
+  wink: CharacterEmotions.SUCCESS,
+  woah: CharacterEmotions.SUCCESS,
+};
