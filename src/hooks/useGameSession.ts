@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PHRASE_TYPE, getRandomPhrase } from "@/constants/lang";
+import { TURNS_PER_GAME } from "@/engine/score";
 import type { GameSnapshot } from "@/types/Achievement";
 import type { GameOutcome, ScoreCategory } from "@/types/Game";
 import type { Matchup } from "@/types/Matchup";
@@ -9,6 +10,32 @@ import { useLiveOpponent } from "./useLiveOpponent";
 import { usePlayerGame } from "./usePlayerGame";
 
 export type { GameOutcome };
+
+/**
+ * Where the shared dice tray is in the turn cycle. Exactly one at a time:
+ *
+ *   waiting -> playerTurn -> scrollingToOpponent -> flippingToOpponent
+ *     -> opponentTurn -> flippingToPlayer -> waiting -> ...
+ *
+ * Solo games only ever use `waiting` and `playerTurn`.
+ *
+ * - `waiting`: your dice, theirs to roll, at rest (the idle wave plays).
+ * - `playerTurn`: you've rolled; the dice are live (rolling, held, scored).
+ * - `scrollingToOpponent`: you've scored; the page scrolls up to the opponent.
+ * - `flippingToOpponent`: the dice turn over to the opponent's theme.
+ * - `opponentTurn`: the opponent rolls, holds and scores.
+ * - `flippingToPlayer`: the dice turn back to your theme.
+ */
+export type DiceStage =
+  | "waiting"
+  | "playerTurn"
+  | "scrollingToOpponent"
+  | "flippingToOpponent"
+  | "opponentTurn"
+  | "flippingToPlayer";
+
+/** The stored half of `DiceStage`: whose turn it is and how the hand-over is going. */
+type Phase = "player" | Exclude<DiceStage, "waiting" | "playerTurn">;
 
 // Opponents move at a fixed, brisk pace (ms) so you never wait long.
 const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
@@ -26,10 +53,17 @@ const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
  * `onProgress` is called after each of the player's turns, and once more when
  * the game is over (achievements use it).
  *
- * Handing over: scoring in a versus game does not start the opponent's turn
- * by itself. It marks the opponent as up next (`isOpponentTurn`, so the
- * player's controls lock) and waits for `startOpponentTurn()`. That gives the
- * view time to scroll to the opponent and swap the dice first.
+ * Handing over: a versus game moves through the `DiceStage`s above, one step
+ * at a time, and each step waits for the view to say the previous one is done:
+ *
+ *   score()                -> scrollingToOpponent (the player's controls lock)
+ *   finishScrollToOpponent -> flippingToOpponent  (the page has stopped moving)
+ *   finishDiceFlip         -> opponentTurn        (the flip is over; they roll)
+ *   (their turn ends)      -> flippingToPlayer
+ *   finishDiceFlip         -> waiting             (the player may roll again)
+ *
+ * Your controls stay locked (`isOpponentTurn`) for all of it, except that when
+ * the opponent's last turn ends the game, there is no flip back.
  */
 export function useGameSession(
   matchup: Matchup,
@@ -45,14 +79,26 @@ export function useGameSession(
     character ? getRandomPhrase(character.phrases[PHRASE_TYPE.GREETINGS]) : null
   );
 
+  // Whose turn it is and how the hand-over is going. A ref mirrors it so the
+  // callbacks below always see the latest value, even when a timer or an
+  // animation calls them long after the render they were made in.
+  const [phase, setPhaseState] = useState<Phase>("player");
+  const phaseRef = useRef<Phase>("player");
+  const setPhase = useCallback((next: Phase) => {
+    phaseRef.current = next;
+    setPhaseState(next);
+  }, []);
+
   const opponent = useLiveOpponent(character?.botSkill ?? null, {
     ...OPPONENT_PACE,
     phrases: character?.phrases,
+    // Their turn is over: flip the dice back to yours. If that was the last
+    // turn of the game there's nothing left to roll, so skip the flip.
+    onTurnComplete: ({ turnIndex }) =>
+      setPhase(turnIndex + 1 >= TURNS_PER_GAME ? "player" : "flippingToPlayer"),
   });
 
-  // Set from the moment you score until the view calls `startOpponentTurn`.
-  const [handoffPending, setHandoffPending] = useState(false);
-  const isOpponentTurn = isVersus && (opponent.isPlaying || handoffPending);
+  const isOpponentTurn = isVersus && phase !== "player";
   const player = usePlayerGame({ isPlayerTurn: !isOpponentTurn });
 
   // --- High score: record it once per finished game ------------------------
@@ -130,35 +176,57 @@ export function useGameSession(
     if (!player.canScore || isOpponentTurn) return false;
     if (player.scoreSheet[category] !== null) return false;
     player.score(category);
-    // Turns alternate: the opponent is up next, once the view says so.
-    if (isVersus) setHandoffPending(true);
+    // Turns alternate: the view scrolls to the opponent, then the dice flip.
+    if (isVersus) setPhase("scrollingToOpponent");
     return true;
   };
 
-  /** The dice are theirs: the opponent plays their turn. */
+  /** The page has scrolled the opponent into view: now flip the dice. */
+  const finishScrollToOpponent = useCallback(() => {
+    if (phaseRef.current === "scrollingToOpponent") {
+      setPhase("flippingToOpponent");
+    }
+  }, [setPhase]);
+
+  /**
+   * The dice have finished turning over (the view reports it, and it also
+   * fires at once if both sides use the same dice). Either they're now the
+   * opponent's, so the opponent rolls, or they're yours again and at rest.
+   */
   const { playTurn: playOpponentTurn } = opponent;
-  const startOpponentTurn = useCallback(() => {
-    setHandoffPending(false);
-    playOpponentTurn();
-  }, [playOpponentTurn]);
+  const finishDiceFlip = useCallback(() => {
+    switch (phaseRef.current) {
+      case "flippingToOpponent":
+        setPhase("opponentTurn");
+        playOpponentTurn();
+        break;
+      case "flippingToPlayer":
+        setPhase("player");
+        break;
+    }
+  }, [setPhase, playOpponentTurn]);
 
   // --- What the views need ---------------------------------------------------
+  const diceStage: DiceStage =
+    phase === "player" ? (player.dice ? "playerTurn" : "waiting") : phase;
+
   /**
-   * The single dice tray shows whoever is actually playing. While the turn is
-   * being handed over it still shows yours, so the opponent's previous dice
-   * don't flash up in the wrong theme.
+   * The single dice tray shows the opponent's dice only while they play. In
+   * every other stage it shows yours, so the other side's dice never flash up
+   * in the wrong theme while the tray flips.
    */
-  const tray = opponent.isPlaying
-    ? {
-        dice: opponent.dice,
-        keepMask: opponent.keepMask,
-        isRolling: opponent.isRolling,
-      }
-    : {
-        dice: player.dice,
-        keepMask: player.keepMask,
-        isRolling: player.isRolling,
-      };
+  const tray =
+    diceStage === "opponentTurn"
+      ? {
+          dice: opponent.dice,
+          keepMask: opponent.keepMask,
+          isRolling: opponent.isRolling,
+        }
+      : {
+          dice: player.dice,
+          keepMask: player.keepMask,
+          isRolling: player.isRolling,
+        };
 
   const chatMessages = useMemo(
     () => (greeting ? [greeting, ...opponent.messages] : opponent.messages),
@@ -170,6 +238,7 @@ export function useGameSession(
     opponent,
     isVersus,
     isOpponentTurn,
+    diceStage,
     tray,
     chatMessages,
     /** Set for versus games; solo play has none. */
@@ -181,6 +250,7 @@ export function useGameSession(
     robotError: character ? opponent.error : null,
     retryRobotTurn: opponent.playTurn,
     score,
-    startOpponentTurn,
+    finishScrollToOpponent,
+    finishDiceFlip,
   };
 }

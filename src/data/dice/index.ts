@@ -15,6 +15,7 @@ import { frostTheme } from "./themes/frost";
 import { midnightNeonTheme } from "./themes/midnight-neon";
 import { starlightTheme } from "./themes/starlight";
 import { bonesTheme } from "./themes/bones";
+import { blazeTheme } from "./themes/blaze";
 import { obsidianRedTheme } from "./themes/obsidian-red";
 
 export const DICE_THEMES: DiceTheme[] = [
@@ -34,6 +35,7 @@ export const DICE_THEMES: DiceTheme[] = [
   midnightNeonTheme,
   starlightTheme,
   bonesTheme,
+  blazeTheme,
 ];
 
 /**

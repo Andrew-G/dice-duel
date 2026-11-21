@@ -39,7 +39,7 @@ const RobotSelectView = ({
 
     {robots.length < CHALLENGE_ORDER.length && (
       <p className="text-center text-sm text-white/60">
-        Beat more rival robots in Challenge mode to unlock more opponents.
+        Beat rival robots in Challenge mode to unlock more opponents.
       </p>
     )}
 

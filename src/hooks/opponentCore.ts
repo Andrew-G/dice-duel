@@ -90,6 +90,8 @@ export function opponentReducer(
       return {
         ...state,
         isPlaying: true,
+        // Start from blank dice, not the last turn's result.
+        dice: null,
         keepMask: NO_KEEPS,
         rollsRemaining: ROLLS_PER_TURN,
         lastScored: null,

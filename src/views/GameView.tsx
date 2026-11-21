@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { useEffect, useRef, useState } from "react";
-import GameDice, { DICE_FLIP_TOTAL_MS } from "@/components/GameDice";
+import { useRef } from "react";
+import GameDice from "@/components/GameDice";
 import GameResult from "@/components/GameResult";
 import OpponentPanel from "@/components/OpponentPanel";
 import RecordPanel from "@/components/RecordPanel";
@@ -54,36 +54,34 @@ const GameView = ({
     onGameEnd,
     onProgress
   );
-  const { player, opponent, isVersus, isOpponentTurn, tray, character } =
-    session;
+  const {
+    player,
+    opponent,
+    isVersus,
+    isOpponentTurn,
+    diceStage,
+    tray,
+    character,
+  } = session;
   const opponentName = character?.name ?? "Opponent";
 
   // --- Handing over the dice -------------------------------------------------
-  // The tray is shared. It rolls your dice (your chosen theme) on your turn and
-  // the character's on theirs. Scoring usually happens at the bottom of the
-  // page, far from the opponent, so a moment after you score the page scrolls
-  // back up to them. Once it has settled the dice turn over to their theme, and
-  // only then does the opponent start rolling. When their turn ends the dice
-  // turn back to yours at once: you're already at the top.
+  // The tray is shared, and `session.diceStage` says where it is in the turn
+  // cycle (see `DiceStage`). This view supplies the two things the session
+  // can't know: when the page has stopped scrolling, and when the dice have
+  // stopped flipping. After you score, in order: the page scrolls up to the
+  // opponent, the dice turn over to their theme, the opponent rolls, and when
+  // they're done the dice turn back to yours and sit still until you roll.
   const opponentRef = useRef<HTMLDivElement>(null);
   const diceRef = useRef<HTMLDivElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
-  const [opponentDiceReady, setOpponentDiceReady] = useState(false);
   const { scrollTo } = useDelayedScroll();
 
-  const showOpponentDice = isOpponentTurn && opponentDiceReady;
-
-  // Always call the latest `startOpponentTurn` from the timers below.
-  const startOpponentTurnRef = useRef(session.startOpponentTurn);
-  useEffect(() => {
-    startOpponentTurnRef.current = session.startOpponentTurn;
-  });
-  const flipTimer = useRef(0);
-  useEffect(() => () => window.clearTimeout(flipTimer.current), []);
+  // Their dice from the moment the flip to them starts until the flip back.
+  const showOpponentDice =
+    diceStage === "flippingToOpponent" || diceStage === "opponentTurn";
 
   const handleScore = (category: ScoreCategory) => {
-    setOpponentDiceReady(false);
-    window.clearTimeout(flipTimer.current);
     if (!session.score(category)) return;
 
     scrollTo(
@@ -91,18 +89,8 @@ const GameView = ({
       // that was the last turn and the dice are gone.
       () =>
         character ? opponentRef.current : diceRef.current ?? resultRef.current,
-      () => {
-        if (!isVersus) return;
-        // Flip to their dice, let the flip finish, then they roll.
-        setOpponentDiceReady(true);
-        const reduceMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-        flipTimer.current = window.setTimeout(
-          () => startOpponentTurnRef.current(),
-          reduceMotion ? 0 : DICE_FLIP_TOTAL_MS
-        );
-      }
+      // Solo has no hand-over, so there's nothing to do once it has settled.
+      isVersus ? session.finishScrollToOpponent : () => {}
     );
   };
 
@@ -185,8 +173,10 @@ const GameView = ({
               opponentDiceId={character?.diceId}
               showOpponentDice={showOpponentDice}
               isRolling={tray.isRolling}
-              // isWaiting{!tray.dice}
-              isWaiting={!!!tray.dice}
+              // At rest only between turns: not while scrolling, flipping or
+              // showing the opponent's dice.
+              isWaiting={diceStage === "waiting"}
+              onFlipEnd={session.finishDiceFlip}
               onKeepToggle={isOpponentTurn ? undefined : player.toggleKeep}
             />
           </div>

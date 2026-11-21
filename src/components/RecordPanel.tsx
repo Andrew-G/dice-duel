@@ -37,9 +37,13 @@ const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {
 
   return (
     <div className="space-y-3 rounded-md bg-black/40 p-4 text-white">
-      <div className="flex flex-wrap gap-2 items-center">
-        <button type="button" onClick={download}>
-          Save game JSON {fileName}
+      <div className="flex flex-wrap gap-2 items-center w-full">
+        <button
+          type="button"
+          onClick={download}
+          className="cursor-pointer text-center text-xs w-full opacity-50 hover:opacity-75"
+        >
+          Save game JSON
         </button>
       </div>
     </div>

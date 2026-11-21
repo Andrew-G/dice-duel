@@ -2,31 +2,17 @@ import { DEFAULT_DICE_ID, getDiceTheme } from "@/data/dice";
 import { useDiceWave } from "@/hooks/useDiceWave";
 import type { Dice, Die, KeepMask } from "@/types/Dice";
 import { useEffect, useRef, useState } from "react";
+import type { DiceTheme } from "@/types/DiceTheme";
+import DieFlip, { DIE_FLIP_MS, DIE_FLIP_STAGGER_MS } from "./DieFlip";
 import GameDie from "./GameDie";
 
 const DICE_COUNT = 5;
 
-/** Half of a die's flip: from flat to edge-on. The theme swaps at that point. */
-const FLIP_HALF_MS = 160;
+/** How long it takes for all the dice to finish rolling over to a new theme. */
+const DICE_FLIP_TOTAL_MS = DIE_FLIP_MS + DIE_FLIP_STAGGER_MS * (DICE_COUNT - 1);
 
-/** Each die starts flipping a little after the one before, so it ripples across. */
-const FLIP_STAGGER_MS = 70;
-
-/** How long it takes for all the dice to finish turning over to a new theme. */
-export const DICE_FLIP_TOTAL_MS =
-  FLIP_HALF_MS * 2 + FLIP_STAGGER_MS * (DICE_COUNT - 1);
-
-/** Edge-on is invisible, so the jump from +90deg to -90deg can't be seen. */
-const FLIP_KEYFRAMES: Keyframe[] = [
-  { transform: "perspective(300px) rotateY(0deg)", offset: 0, easing: "ease-in" },
-  { transform: "perspective(300px) rotateY(90deg)", offset: 0.5 },
-  {
-    transform: "perspective(300px) rotateY(-90deg)",
-    offset: 0.5,
-    easing: "ease-out",
-  },
-  { transform: "perspective(300px) rotateY(0deg)", offset: 1 },
-];
+/** Sideways wobble mid-roll for each die (degrees), so they don't move in lockstep. */
+const FLIP_WOBBLE_DEG = [6, -8, 5, -7, 8];
 
 type GameDiceProps = {
   dice?: Dice;
@@ -36,12 +22,19 @@ type GameDiceProps = {
   /** The opponent's dice theme, for games where the dice change hands. */
   opponentDiceId?: string;
   /**
-   * Show `opponentDiceId` instead of `diceId`. When this flips, the dice turn
-   * over one after another to the other theme.
+   * Show `opponentDiceId` instead of `diceId`. When this flips, the dice roll
+   * over one after another, like cubes, to the other theme.
    */
   showOpponentDice?: boolean;
   isRolling?: boolean;
+  /** Dice at rest between turns: they bob in an idle wave. */
   isWaiting?: boolean;
+  /**
+   * Called once the dice have finished turning over after `showOpponentDice`
+   * changed. If both sides use the same theme there is nothing to animate, and
+   * it is called straight away.
+   */
+  onFlipEnd?: () => void;
   onKeepToggle?: (index: number) => void;
 };
 
@@ -53,6 +46,7 @@ const GameDice = ({
   showOpponentDice,
   isRolling,
   isWaiting,
+  onFlipEnd,
   onKeepToggle,
 }: GameDiceProps) => {
   const theme = getDiceTheme(
@@ -60,46 +54,53 @@ const GameDice = ({
   );
   const wavePositions = useDiceWave(!!isWaiting);
 
-  // The theme each die is drawn with. It trails `theme` while the dice flip, so
-  // every die swaps while it's edge-on instead of all of them popping at once.
-  const [shownThemes, setShownThemes] = useState(() =>
-    Array.from({ length: DICE_COUNT }, () => theme)
+  // The theme the dice are drawn with. It trails `theme` while they roll over
+  // (`flip` is set then), and catches up when the roll is done.
+  const [shownTheme, setShownTheme] = useState(theme);
+  const [flip, setFlip] = useState<{ from: DiceTheme; to: DiceTheme } | null>(
+    null
   );
-  const settledThemeId = useRef(theme.id);
-  const dieWrappers = useRef<(HTMLDivElement | null)[]>([]);
+  const shownThemeRef = useRef(shownTheme);
+  useEffect(() => {
+    shownThemeRef.current = shownTheme;
+  });
+  const settledSide = useRef(!!showOpponentDice);
+
+  // Always call the latest `onFlipEnd` from the timer below. This effect is
+  // declared first so it has run before the flip effect needs it.
+  const onFlipEndRef = useRef(onFlipEnd);
+  useEffect(() => {
+    onFlipEndRef.current = onFlipEnd;
+  });
 
   useEffect(() => {
-    if (settledThemeId.current === theme.id) return;
-    settledThemeId.current = theme.id;
+    // Roll when the side changes (not on first mount).
+    if (settledSide.current === !!showOpponentDice) return;
+    settledSide.current = !!showOpponentDice;
 
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    const wrappers = dieWrappers.current;
-    const timers: number[] = [];
+    const from = shownThemeRef.current;
 
-    for (let i = 0; i < DICE_COUNT; i++) {
-      const swap = () =>
-        setShownThemes((prev) => prev.map((t, j) => (j === i ? theme : t)));
-
-      if (reduceMotion) {
-        swap();
-        continue;
-      }
-
-      const delay = i * FLIP_STAGGER_MS;
-      wrappers[i]?.animate(FLIP_KEYFRAMES, {
-        duration: FLIP_HALF_MS * 2,
-        delay,
-      });
-      timers.push(window.setTimeout(swap, delay + FLIP_HALF_MS));
+    // Nothing to animate (both sides use the same dice, or motion is reduced):
+    // swap at once and report that the flip is over.
+    if (reduceMotion || from.id === theme.id) {
+      setFlip(null);
+      setShownTheme(theme);
+      onFlipEndRef.current?.();
+      return;
     }
 
-    return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
-      wrappers.forEach((el) => el?.getAnimations().forEach((a) => a.cancel()));
-    };
-  }, [theme]);
+    setFlip({ from, to: theme });
+    const timer = window.setTimeout(() => {
+      setShownTheme(theme);
+      setFlip(null);
+      onFlipEndRef.current?.();
+    }, DICE_FLIP_TOTAL_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [theme, showOpponentDice]);
 
   const [diceRollPositions, setDiceRollPositions] = useState<number[][]>([
     [0, 0],
@@ -156,16 +157,22 @@ const GameDice = ({
 
         const faceValue = (isShaking ? diceRollValues[i] : d ?? 1) as Die;
 
+        // While the theme changes the die is drawn as a rolling cube instead.
+        if (flip) {
+          return (
+            <DieFlip
+              key={i}
+              from={flip.from}
+              to={flip.to}
+              value={faceValue}
+              delayMs={i * DIE_FLIP_STAGGER_MS}
+              wobbleDeg={FLIP_WOBBLE_DEG[i]}
+            />
+          );
+        }
+
         return (
-          // The flip lives on this wrapper so it can't clash with the roll
-          // shake and idle wave, which move the die itself.
-          <div
-            key={i}
-            ref={(el) => {
-              dieWrappers.current[i] = el;
-            }}
-            className="h-10 w-10 shrink-0"
-          >
+          <div key={i} className="h-10 w-10 shrink-0">
             <GameDie
               i={i}
               diceRollPositions={diceRollPositions}
@@ -174,7 +181,7 @@ const GameDice = ({
               isShaking={isShaking}
               isWaiting={isWaiting}
               onKeepToggle={onKeepToggle}
-              theme={shownThemes[i]}
+              theme={shownTheme}
               wavePositions={wavePositions}
             />
           </div>
