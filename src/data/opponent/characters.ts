@@ -1,35 +1,37 @@
-
 import { PHRASE_TYPE } from "@/constants/lang";
 import { Character } from "@/types/Character";
 
 export enum CHARACTER_ID {
-  ANVIL = 'anvil',
-  SCRAPPY = 'scrappy',
-  GLITCH = 'glitch',
-  RATCHET = 'ratchet',
-  ENFORCER = 'enforcer',
-  LUMA = 'luma',
-  VALENTINE = 'valentine',
-  HELIOS = 'helios'
+  ANVIL = "anvil",
+  SCRAPPY = "scrappy",
+  GLITCH = "glitch",
+  RATCHET = "ratchet",
+  ENFORCER = "enforcer",
+  LUMA = "luma",
+  VALENTINE = "valentine",
+  HELIOS = "helios",
 }
 
 export const ENFORCER: Character = {
   id: CHARACTER_ID.ENFORCER,
   name: "Enforcer",
   avatarSrc: "/img/character/enforcer.png",
-  brief: "A cold, heavily armoured corporate security droid who believes every situation should end in his favour.",
-  description: "A heavily armoured corporate security droid. Cold, calculated and intimidating, the Enforcer believes every situation has a correct outcome — and that outcome is usually his victory. He doesn't waste words, doesn't tolerate nonsense, and has absolutely no sense of humour.",
-  introduction: "You have entered a restricted competition zone. Your defeat has already been calculated. Proceed.",
+  brief:
+    "A cold, heavily armoured corporate security droid who believes every situation should end in his favour.",
+  description:
+    "A heavily armoured corporate security droid. Cold, calculated and intimidating, the Enforcer believes every situation has a correct outcome — and that outcome is usually his victory. He doesn't waste words, doesn't tolerate nonsense, and has absolutely no sense of humour.",
+  introduction:
+    "You have entered a restricted competition zone. Your defeat has already been calculated. Proceed.",
   botSkill: {
-    temperature: 1.5
+    temperature: 1.5,
   },
-  diceId: 'obsidian-red',
+  diceId: "obsidian-red",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Identification complete. Prepare for termination.",
       "This should be a straightforward exercise.",
       "I suggest you surrender. It will save us both time.",
-      "Let's get this over with."
+      "Let's get this over with.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Calculating optimal outcome...",
@@ -40,7 +42,7 @@ export const ENFORCER: Character = {
       "Your chances are deteriorating.",
       "Processing all possible outcomes.",
       "The numbers suggest an inevitable conclusion.",
-      "Re-evaluating your increasingly poor performance."
+      "Re-evaluating your increasingly poor performance.",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "As expected.",
@@ -51,7 +53,7 @@ export const ENFORCER: Character = {
       "Victory confirmed. Moving on.",
       "Resistance was statistically pointless.",
       "A flawless execution of the objective.",
-      "Consider this a demonstration of superior engineering."
+      "Consider this a demonstration of superior engineering.",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Unacceptable. Recalculating.",
@@ -62,28 +64,31 @@ export const ENFORCER: Character = {
       "Adjusting tactical parameters.",
       "This result will not be repeated.",
       "My systems require recalibration.",
-      "I refuse to acknowledge that outcome."
-    ]
-  }
+      "I refuse to acknowledge that outcome.",
+    ],
+  },
 };
 
 export const GLITCH: Character = {
   id: CHARACTER_ID.GLITCH,
   name: "Glitch",
   avatarSrc: "/img/character/glitch.png",
-  brief: "A corrupted experimental droid with an unstable operating system and an unpredictable personality.",
-  description: "An experimental droid with a seriously corrupted operating system. Glitch's thoughts jump between realities, its speech is riddled with errors, and even it doesn't know what it's going to do next. Unpredictable, unstable and possibly a little dangerous.",
-  introduction: "H̸E̷L̶L̷O̴, HUMAN! I've been expecting you... or was that yesterday? LET'S BREAK REALITY!",
+  brief:
+    "A corrupted experimental droid with an unstable operating system and an unpredictable personality.",
+  description:
+    "An experimental droid with a seriously corrupted operating system. Glitch's thoughts jump between realities, its speech is riddled with errors, and even it doesn't know what it's going to do next. Unpredictable, unstable and possibly a little dangerous.",
+  introduction:
+    "H̸E̷L̶L̷O̴, HUMAN! I've been expecting you... or was that yesterday? LET'S BREAK REALITY!",
   botSkill: {
-    temperature: 2
+    temperature: 2,
   },
-  diceId: 'cursed',
+  diceId: "cursed",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "H̸e̴l̷l̶o̷? ... Oh, you're still there.",
       "New player detected. Initiating... something.",
       "WARNING: FUN.EXE HAS STARTED.",
-      "Hehehe. Let's break something."
+      "Hehehe. Let's break something.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Wait... what was I doing?",
@@ -95,7 +100,7 @@ export const GLITCH: Character = {
       "Brain.exe has stopped responding.",
       "I asked the universe. It sent me a potato.",
       "Quick! Distract the numbers while I think!",
-      "ERROR: Thought not found. Searching elsewhere."
+      "ERROR: Thought not found. Searching elsewhere.",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "HAHA! DID YOU SEE THAT?!",
@@ -107,7 +112,7 @@ export const GLITCH: Character = {
       "HAHAHA! I BROKE THE LAWS OF PROBABILITY!",
       "Did I win? I WON! I THINK!",
       "Glorious chaos! My favourite flavour!",
-      "Achievement unlocked: UNEXPECTED SUCCESS!"
+      "Achievement unlocked: UNEXPECTED SUCCESS!",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Oops. Hehehe. Oops.",
@@ -119,28 +124,31 @@ export const GLITCH: Character = {
       "NOOO! My imaginary victory!",
       "Well, that was a spectacular disaster.",
       "I blame the simulation. And the moon.",
-      "SYSTEM FAILURE: DIGNITY NOT FOUND."
-    ]
-  }
+      "SYSTEM FAILURE: DIGNITY NOT FOUND.",
+    ],
+  },
 };
 
 export const LUMA: Character = {
   id: CHARACTER_ID.LUMA,
   name: "Luma",
   avatarSrc: "/img/character/luma.png",
-  brief: "A flashy, attention-loving nightlife droid covered in colourful neon modifications.",
-  description: "A flashy nightlife droid who has spent far too much time upgrading herself with illegal neon modifications. Luma loves attention, bright lights and anything that makes her stand out. She's playful, energetic and always ready to turn a simple dice game into a spectacle.",
-  introduction: "Well, well! Look what just walked into my spotlight. Try to keep up, darling. This is going to be dazzling!",
+  brief:
+    "A flashy, attention-loving nightlife droid covered in colourful neon modifications.",
+  description:
+    "A flashy nightlife droid who has spent far too much time upgrading herself with illegal neon modifications. Luma loves attention, bright lights and anything that makes her stand out. She's playful, energetic and always ready to turn a simple dice game into a spectacle.",
+  introduction:
+    "Well, well! Look what just walked into my spotlight. Try to keep up, darling. This is going to be dazzling!",
   botSkill: {
-    temperature: 1
+    temperature: 1,
   },
-  diceId: 'void',
+  diceId: "void",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Hey gorgeous! Ready for a little excitement?",
       "Ooh, I love a new face!",
       "Let's light this place up!",
-      "Hope you've got your lucky dice, darling."
+      "Hope you've got your lucky dice, darling.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Hmm... let me see what the stars say!",
@@ -151,7 +159,7 @@ export const LUMA: Character = {
       "Hold on, I need to make this dramatic.",
       "A little suspense never hurt anybody!",
       "Let's turn up the voltage!",
-      "My lucky lights are flickering. That's a good sign, right?"
+      "My lucky lights are flickering. That's a good sign, right?",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "YESSS! Did you see that?!",
@@ -162,7 +170,7 @@ export const LUMA: Character = {
       "The crowd goes wild! Oh wait, it's just you.",
       "Flawless, fabulous and fully charged!",
       "Somebody get me a spotlight!",
-      "I really should be charging admission for this show."
+      "I really should be charging admission for this show.",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Ugh! That's going to ruin my whole vibe.",
@@ -173,28 +181,31 @@ export const LUMA: Character = {
       "I think one of my neon strips just died.",
       "No photos, please. I'm having a moment.",
       "That was supposed to be a dazzling victory!",
-      "Let's pretend that was an experimental performance."
-    ]
-  }
+      "Let's pretend that was an experimental performance.",
+    ],
+  },
 };
 
 export const SCRAPPY: Character = {
   id: CHARACTER_ID.SCRAPPY,
   name: "Scrappy",
   avatarSrc: "/img/character/scrappy.png",
-  brief: "A cobbled-together junk dealer who trusts spare parts, duct tape and a little bit of luck.",
-  description: "A walking pile of salvaged machinery held together by questionable engineering and sheer determination. Scrappy has spent years collecting discarded parts, fixing broken technology and making a living out of other people's junk. He's a shrewd trader, a terrible gambler and always convinced he's about to strike it rich.",
-  introduction: "Oi! You look like you've got something worth winning. Let's see if I can turn your luck into my next big payday!",
+  brief:
+    "A cobbled-together junk dealer who trusts spare parts, duct tape and a little bit of luck.",
+  description:
+    "A walking pile of salvaged machinery held together by questionable engineering and sheer determination. Scrappy has spent years collecting discarded parts, fixing broken technology and making a living out of other people's junk. He's a shrewd trader, a terrible gambler and always convinced he's about to strike it rich.",
+  introduction:
+    "Oi! You look like you've got something worth winning. Let's see if I can turn your luck into my next big payday!",
   botSkill: {
-    temperature: 4
+    temperature: 4,
   },
-  diceId: 'obsidian',
+  diceId: "obsidian",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Well, well! Fresh meat... I mean, customer!",
       "Got any spare parts? No? How about your lunch money?",
       "Heh! Let's see what you've got.",
-      "Careful with those dice. They're worth more than they look."
+      "Careful with those dice. They're worth more than they look.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Hang on, I can fix this...",
@@ -206,7 +217,7 @@ export const SCRAPPY: Character = {
       "Come on, don't fail me now, lucky junk!",
       "Maybe I can trade these odds for something better.",
       "I knew I should've salvaged a calculator.",
-      "Just need to tighten a few loose bolts..."
+      "Just need to tighten a few loose bolts...",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "HA! Another profitable transaction!",
@@ -218,7 +229,7 @@ export const SCRAPPY: Character = {
       "That's what I call a bargain!",
       "Worth every rusty bolt!",
       "Now that's a return on investment!",
-      "Heh! Looks like I've struck gold!"
+      "Heh! Looks like I've struck gold!",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Ah, scrap it!",
@@ -230,28 +241,31 @@ export const SCRAPPY: Character = {
       "That's another thing I'll need to fix.",
       "Someone's sold me a dodgy set of odds!",
       "There goes my retirement fund.",
-      "Back to the drawing board. Anyone got a spare?"
-    ]
-  }
+      "Back to the drawing board. Anyone got a spare?",
+    ],
+  },
 };
 
 export const HELIOS: Character = {
   id: CHARACTER_ID.HELIOS,
   name: "Helios",
   avatarSrc: "/img/character/helios.png",
-  brief: "An ancient bronze synthetic being who believes every dice roll is part of a greater cosmic pattern.",
-  description: "An ancient synthetic being from a forgotten civilisation, Helios has existed for longer than most stars have been observed. Its bronze shell is covered in mysterious inscriptions, and its glowing eyes seem to see far beyond the present. Patient, cryptic and impossibly wise, Helios treats every game as another small lesson in the nature of fate.",
-  introduction: "The stars have aligned, and your path has led you here. Come, challenger. Let us discover what fate has written for you.",
+  brief:
+    "An ancient bronze synthetic being who believes every dice roll is part of a greater cosmic pattern.",
+  description:
+    "An ancient synthetic being from a forgotten civilisation, Helios has existed for longer than most stars have been observed. Its bronze shell is covered in mysterious inscriptions, and its glowing eyes seem to see far beyond the present. Patient, cryptic and impossibly wise, Helios treats every game as another small lesson in the nature of fate.",
+  introduction:
+    "The stars have aligned, and your path has led you here. Come, challenger. Let us discover what fate has written for you.",
   botSkill: {
-    temperature: 0
+    temperature: 0,
   },
-  diceId: 'obsidian-gold',
+  diceId: "obsidian-gold",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Ah... another soul seeking to challenge fate.",
       "I have waited many cycles for this moment.",
       "Come, young one. Let us test the turning of fortune.",
-      "The dice have spoken of your arrival."
+      "The dice have spoken of your arrival.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "The answer lies within the pattern.",
@@ -263,7 +277,7 @@ export const HELIOS: Character = {
       "Every number has its place in the grand design.",
       "Time itself may hold the answer.",
       "The pattern is shifting before my eyes.",
-      "Even chaos follows a hidden order."
+      "Even chaos follows a hidden order.",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "As the ancient ones foretold.",
@@ -275,7 +289,7 @@ export const HELIOS: Character = {
       "The universe has answered.",
       "The balance remains as it should be.",
       "Another truth emerges from the turning of the dice.",
-      "All things unfold according to their nature."
+      "All things unfold according to their nature.",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Even the stars must sometimes fall.",
@@ -287,28 +301,31 @@ export const HELIOS: Character = {
       "A shadow has crossed the path of destiny.",
       "Even wisdom must bow to uncertainty.",
       "The stars have offered a different answer.",
-      "There is meaning in this unexpected turn."
-    ]
-  }
+      "There is meaning in this unexpected turn.",
+    ],
+  },
 };
 
 export const ANVIL: Character = {
   id: CHARACTER_ID.ANVIL,
   name: "Anvil",
   avatarSrc: "/img/character/anvil.png",
-  brief: "A battle-scarred space pirate droid who treats every dice game like a raid for valuable loot.",
-  description: "A battle-scarred pirate droid with a taste for trouble and a pocket full of stolen technology. Anvil has raided cargo ships, outsmarted bounty hunters and survived more explosions than most machines could handle. Loud, cocky and fiercely competitive, he treats every game like a raid and every opponent like a potential payday.",
-  introduction: "Hope you're ready to walk the plank, punk! Hand over your loot, or prepare to lose it the hard way!",
+  brief:
+    "A battle-scarred space pirate droid who treats every dice game like a raid for valuable loot.",
+  description:
+    "A battle-scarred pirate droid with a taste for trouble and a pocket full of stolen technology. Anvil has raided cargo ships, outsmarted bounty hunters and survived more explosions than most machines could handle. Loud, cocky and fiercely competitive, he treats every game like a raid and every opponent like a potential payday.",
+  introduction:
+    "Hope you're ready to walk the plank, punk! Hand over your loot, or prepare to lose it the hard way!",
   botSkill: {
-    temperature: 2.8
+    temperature: 2.8,
   },
-  diceId: 'bones',
+  diceId: "bones",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Arrr! Let's see if you've got any guts!",
       "Hope you've brought more than just luck, matey!",
       "Another sucker at my table. Beautiful!",
-      "Winner takes the loot. Loser walks the plank!"
+      "Winner takes the loot. Loser walks the plank!",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Arrr... plotting me next move.",
@@ -320,7 +337,7 @@ export const ANVIL: Character = {
       "I've robbed ships with worse odds than this!",
       "Come on, dice! Show me the booty!",
       "Time to separate the gold from the garbage.",
-      "A little mutiny in the numbers, perhaps?"
+      "A little mutiny in the numbers, perhaps?",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "ARRR! That's what I'm talkin' about!",
@@ -332,7 +349,7 @@ export const ANVIL: Character = {
       "Another victory for the terror of the stars!",
       "Yo-ho-ho! That's me kind of treasure!",
       "Send that loot straight to me quarters!",
-      "Captain Anvil strikes again!"
+      "Captain Anvil strikes again!",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Blast it! Rotten luck!",
@@ -344,28 +361,31 @@ export const ANVIL: Character = {
       "Aargh! Someone's tampered with me dice!",
       "I've seen better luck in a black hole!",
       "This ain't over, ye scurvy landlubber!",
-      "I'll be taking that back in the next raid!"
-    ]
-  }
+      "I'll be taking that back in the next raid!",
+    ],
+  },
 };
 
 export const RATCHET: Character = {
   id: CHARACTER_ID.RATCHET,
   name: "Ratchet",
   avatarSrc: "/img/character/ratchet.png",
-  brief: "A battered old bar droid who has seen it all and still has a few tricks up his rusty sleeves.",
-  description: "An ageing bar droid who has been serving drinks and watching games for decades. His battered casing, faded paint and slightly outdated hardware tell stories of a thousand nights. Ratchet isn't particularly clever or impressive, but he's seen every trick in the book. He takes life slowly, speaks his mind and never underestimates a lucky streak.",
-  introduction: "Well, look who's feeling lucky. Pull up a stool, kid. Let's see if you've got what it takes to beat an old timer.",
+  brief:
+    "A battered old bar droid who has seen it all and still has a few tricks up his rusty sleeves.",
+  description:
+    "An ageing bar droid who has been serving drinks and watching games for decades. His battered casing, faded paint and slightly outdated hardware tell stories of a thousand nights. Ratchet isn't particularly clever or impressive, but he's seen every trick in the book. He takes life slowly, speaks his mind and never underestimates a lucky streak.",
+  introduction:
+    "Well, look who's feeling lucky. Pull up a stool, kid. Let's see if you've got what it takes to beat an old timer.",
   botSkill: {
-    temperature: 3
+    temperature: 3,
   },
-  diceId: 'ivory',
+  diceId: "bones",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Well, pull up a seat. What'll it be?",
       "Another game, eh? I've seen worse ideas.",
       "Take it easy, kid. We've got all night.",
-      "Heh. Reminds me of the old days."
+      "Heh. Reminds me of the old days.",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Hmm... give an old bot a second.",
@@ -377,7 +397,7 @@ export const RATCHET: Character = {
       "Let's not get ahead of ourselves, eh?",
       "I've seen stranger things over a glass of oil.",
       "These old gears still know a trick or two.",
-      "Just give me a moment to warm up."
+      "Just give me a moment to warm up.",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "Not bad for an old bucket, eh?",
@@ -389,7 +409,7 @@ export const RATCHET: Character = {
       "The old machine still has it!",
       "Another round? I'm just getting warmed up.",
       "Heh. They don't build 'em like me anymore.",
-      "Put that one on my tab!"
+      "Put that one on my tab!",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Ah well, can't win 'em all.",
@@ -401,28 +421,31 @@ export const RATCHET: Character = {
       "Well, that's one for the history books. The bad ones.",
       "I've had worse luck on a Tuesday.",
       "Maybe I should've stayed behind the bar.",
-      "Ah, the joys of being an old bucket."
-    ]
-  }
+      "Ah, the joys of being an old bucket.",
+    ],
+  },
 };
 
 export const VALENTINE: Character = {
   id: CHARACTER_ID.VALENTINE,
   name: "Valentine",
   avatarSrc: "/img/character/valentine.png",
-  brief: "A glamorous white-and-pink droid who uses charm, confidence and cleverness to get her way.",
-  description: "A stunning white-and-pink pleasure model with immaculate styling, expressive glowing eyes and a dangerously charming personality. Valentine knows exactly how much attention she attracts and isn't afraid to use it. Flirtatious, confident and devilishly clever, she prefers to win with a smile rather than brute force. Underneath the charm is a calculating mind that rarely misses a trick.",
-  introduction: "Well hello, gorgeous. Think you can handle a little competition? I do hope you enjoy a challenge...",
+  brief:
+    "A glamorous white-and-pink droid who uses charm, confidence and cleverness to get her way.",
+  description:
+    "A stunning white-and-pink pleasure model with immaculate styling, expressive glowing eyes and a dangerously charming personality. Valentine knows exactly how much attention she attracts and isn't afraid to use it. Flirtatious, confident and devilishly clever, she prefers to win with a smile rather than brute force. Underneath the charm is a calculating mind that rarely misses a trick.",
+  introduction:
+    "Well hello, gorgeous. Think you can handle a little competition? I do hope you enjoy a challenge...",
   botSkill: {
-    temperature: 2.2
+    temperature: 2.2,
   },
-  diceId: 'sakura',
+  diceId: "sakura",
   phrases: {
     [PHRASE_TYPE.GREETINGS]: [
       "Well hello, handsome. Care to play?",
       "Try not to get distracted, darling.",
       "I do hope you brought your lucky dice.",
-      "Oh, this is going to be fun..."
+      "Oh, this is going to be fun...",
     ],
     [PHRASE_TYPE.THINKING]: [
       "Hmm... decisions, decisions.",
@@ -434,7 +457,7 @@ export const VALENTINE: Character = {
       "Let me think... this deserves a little finesse.",
       "I do enjoy keeping you guessing.",
       "A little patience makes victory so much sweeter.",
-      "Let's see what my intuition has to say."
+      "Let's see what my intuition has to say.",
     ],
     [PHRASE_TYPE.SUCCESS]: [
       "Oh darling, you never stood a chance.",
@@ -446,7 +469,7 @@ export const VALENTINE: Character = {
       "I believe that's what they call irresistible.",
       "Another victory. How wonderfully predictable.",
       "You really should know better than to underestimate me.",
-      "I do love a happy ending."
+      "I do love a happy ending.",
     ],
     [PHRASE_TYPE.FAILURE]: [
       "Oh! How terribly embarrassing.",
@@ -458,9 +481,9 @@ export const VALENTINE: Character = {
       "Well played, darling. Don't let it go to your head.",
       "I must admit, I didn't see that coming.",
       "Oh, you've made me work for it. How exciting.",
-      "I'll simply have to be more persuasive next time."
-    ]
-  }
+      "I'll simply have to be more persuasive next time.",
+    ],
+  },
 };
 
 // All characters
@@ -472,7 +495,7 @@ export const CHARACTERS: Character[] = [
   HELIOS,
   ANVIL,
   RATCHET,
-  VALENTINE
+  VALENTINE,
 ];
 
 export const CHARACTER_BY_ID: Record<CHARACTER_ID, Character> = {
@@ -483,5 +506,5 @@ export const CHARACTER_BY_ID: Record<CHARACTER_ID, Character> = {
   [CHARACTER_ID.HELIOS]: HELIOS,
   [CHARACTER_ID.ANVIL]: ANVIL,
   [CHARACTER_ID.RATCHET]: RATCHET,
-  [CHARACTER_ID.VALENTINE]: VALENTINE
+  [CHARACTER_ID.VALENTINE]: VALENTINE,
 };

@@ -17,6 +17,7 @@
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "tw-shimmer": "^0.4.14",
     "use-sound": "^4.0.3"
   },
   "devDependencies": {

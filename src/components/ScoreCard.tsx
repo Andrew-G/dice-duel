@@ -104,7 +104,9 @@ const ScoreCard = ({
   ) => (
     <tr
       key={label}
-      className={`border-b border-white/10 ${strong ? "font-bold text-white" : "text-white/80"}`}
+      className={`border-b border-white/10 ${
+        strong ? "font-bold text-white" : "text-white/80"
+      }`}
     >
       <th scope="row" className="py-1 pr-2 text-left font-normal">
         <span className={strong ? "font-bold" : ""}>{label}</span>
@@ -116,10 +118,33 @@ const ScoreCard = ({
     </tr>
   );
 
+  const headerScoreRow = (
+    label: string,
+    cell: (sheet: ScoreSheet) => ReactNode
+  ) => (
+    <tr key={label} className={`font-bold text-white`}>
+      <th scope="row" className="py-1 pr-2 text-left font-normal">
+        {/* <h4>{label}</h4> */}
+      </th>
+      <td className="w-24 px-2 py-1 text-right">
+        <h4 className="text-3xl">{cell(player)}</h4>
+      </td>
+      {opponent && (
+        <td className="w-24 px-2 py-1 text-right">
+          <h4 className="text-3xl shimmer shimmer-angle-75 text-foreground/40">
+            {cell(opponent)}
+          </h4>
+        </td>
+      )}
+    </tr>
+  );
+
   return (
     <div className="rounded-md bg-black/40 p-3 text-sm text-white">
+      <span className="shimmer text-foreground/60">Loading...</span>
       <table className="w-full border-collapse">
         <thead>
+          {headerScoreRow("Total", (sheet) => sheet.total ?? 0)}
           <tr className="border-b border-white/30 text-white/60">
             <th scope="col" className="py-1 text-left font-normal">
               <span className="sr-only">Box</span>
@@ -139,7 +164,7 @@ const ScoreCard = ({
           {summaryRow("Upper bonus", upperBonusCell)}
           {LOWER_CATEGORIES.map(categoryRow)}
           {summaryRow("Yahtzee bonus", yahtzeeBonusCell)}
-          {summaryRow("Total", (sheet) => sheet.total ?? 0, true)}
+          {summaryRow("Total header", (sheet) => sheet.total ?? 0, true)}
         </tbody>
       </table>
     </div>
