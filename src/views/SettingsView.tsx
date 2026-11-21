@@ -6,6 +6,8 @@ type SettingsViewProps = {
   onSelectDice: (id: string) => void;
   /** Wipe Challenge progress and its story scenes, to test from the start. */
   onResetChallenge: () => void;
+  /** Lock every achievement again and zero the stats, to test from scratch. */
+  onResetAchievements: () => void;
   onBack: () => void;
 };
 
@@ -14,6 +16,7 @@ const SettingsView = ({
   diceId,
   onSelectDice,
   onResetChallenge,
+  onResetAchievements,
   onBack,
 }: SettingsViewProps) => (
   <div className="flex flex-col space-y-6 py-4">
@@ -21,9 +24,19 @@ const SettingsView = ({
 
     <DiceThemePicker selectedId={diceId} onSelect={onSelectDice} />
 
-    <div className="flex justify-center">
+    <div className="flex flex-col items-center gap-2">
       <Button variant="small" onClick={onResetChallenge}>
         Reset challenge progress (testing)
+      </Button>
+      <Button
+        variant="small"
+        onClick={() => {
+          if (window.confirm("Lock all achievements again and reset your stats?")) {
+            onResetAchievements();
+          }
+        }}
+      >
+        Reset achievements (testing)
       </Button>
     </div>
 

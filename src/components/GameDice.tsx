@@ -12,6 +12,10 @@ const FLIP_HALF_MS = 160;
 /** Each die starts flipping a little after the one before, so it ripples across. */
 const FLIP_STAGGER_MS = 70;
 
+/** How long it takes for all the dice to finish turning over to a new theme. */
+export const DICE_FLIP_TOTAL_MS =
+  FLIP_HALF_MS * 2 + FLIP_STAGGER_MS * (DICE_COUNT - 1);
+
 /** Edge-on is invisible, so the jump from +90deg to -90deg can't be seen. */
 const FLIP_KEYFRAMES: Keyframe[] = [
   { transform: "perspective(300px) rotateY(0deg)", offset: 0, easing: "ease-in" },

@@ -14,6 +14,7 @@
     name-reveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.95s both,
     shimmer 2.6s linear 1.8s infinite;
   --animate-fade-up: fade-up 0.5s ease-out 1.5s both;
+  --animate-toast-in: toast-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
   @keyframes die-throb {
     0%,
@@ -93,6 +94,16 @@
     }
     100% {
       background-position: -100% 0;
+    }
+  }
+  @keyframes toast-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-14px) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
   }
   @keyframes fade-up {

@@ -1,13 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PHRASE_TYPE, getRandomPhrase } from "@/constants/lang";
-import type { ScoreCategory } from "@/types/Game";
+import type { GameSnapshot } from "@/types/Achievement";
+import type { GameOutcome, ScoreCategory } from "@/types/Game";
 import type { Matchup } from "@/types/Matchup";
 import type { GameSounds } from "./useGameSounds";
 import type { HighScore } from "./useHighScore";
 import { useLiveOpponent } from "./useLiveOpponent";
 import { usePlayerGame } from "./usePlayerGame";
 
-export type GameOutcome = "win" | "loss" | "tie";
+export type { GameOutcome };
 
 // Opponents move at a fixed, brisk pace (ms) so you never wait long.
 const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
@@ -21,12 +22,21 @@ const OPPONENT_PACE = { rollMs: 400, stepMs: 350 };
  *
  * `onGameEnd` is called once, when a versus game finishes, with the player's
  * outcome (Challenge mode uses it to unlock the next opponent).
+ *
+ * `onProgress` is called after each of the player's turns, and once more when
+ * the game is over (achievements use it).
+ *
+ * Handing over: scoring in a versus game does not start the opponent's turn
+ * by itself. It marks the opponent as up next (`isOpponentTurn`, so the
+ * player's controls lock) and waits for `startOpponentTurn()`. That gives the
+ * view time to scroll to the opponent and swap the dice first.
  */
 export function useGameSession(
   matchup: Matchup,
   highScore: HighScore,
   sounds: GameSounds,
-  onGameEnd?: (outcome: GameOutcome) => void
+  onGameEnd?: (outcome: GameOutcome) => void,
+  onProgress?: (snapshot: GameSnapshot) => void
 ) {
   // Every versus game is against a live robot with a personality.
   const character = matchup.kind === "solo" ? null : matchup.character;
@@ -40,7 +50,9 @@ export function useGameSession(
     phrases: character?.phrases,
   });
 
-  const isOpponentTurn = isVersus && opponent.isPlaying;
+  // Set from the moment you score until the view calls `startOpponentTurn`.
+  const [handoffPending, setHandoffPending] = useState(false);
+  const isOpponentTurn = isVersus && (opponent.isPlaying || handoffPending);
   const player = usePlayerGame({ isPlayerTurn: !isOpponentTurn });
 
   // --- High score: record it once per finished game ------------------------
@@ -73,6 +85,32 @@ export function useGameSession(
     onGameEnd?.(outcome);
   }, [outcome, onGameEnd]);
 
+  // --- Achievements: report after each of your turns, and when the game ends -
+  const snapshot: GameSnapshot = {
+    mode: matchup.kind,
+    turns: player.turns,
+    playerSheet: player.scoreSheet,
+    opponentSheet: isVersus ? opponent.scoreSheet : null,
+    isComplete: isGameOver,
+    outcome,
+  };
+  const snapshotRef = useRef(snapshot);
+  const onProgressRef = useRef(onProgress);
+  useEffect(() => {
+    snapshotRef.current = snapshot;
+    onProgressRef.current = onProgress;
+  });
+  const turnsPlayed = player.turns.length;
+  const completionReported = useRef(false);
+  useEffect(() => {
+    if (turnsPlayed === 0) return;
+    if (isGameOver) {
+      if (completionReported.current) return;
+      completionReported.current = true;
+    }
+    onProgressRef.current?.(snapshotRef.current);
+  }, [turnsPlayed, isGameOver]);
+
   // --- Sound effects --------------------------------------------------------
   const { playRoll, playOpponentRoll, playChat } = sounds;
   useEffect(() => {
@@ -87,17 +125,30 @@ export function useGameSession(
   }, [opponentMessageCount, playChat]);
 
   // --- Actions ---------------------------------------------------------------
-  const score = (category: ScoreCategory) => {
-    if (!player.canScore || isOpponentTurn) return;
-    if (player.scoreSheet[category] !== null) return;
+  /** Returns whether the score went through. */
+  const score = (category: ScoreCategory): boolean => {
+    if (!player.canScore || isOpponentTurn) return false;
+    if (player.scoreSheet[category] !== null) return false;
     player.score(category);
-    // Turns alternate: as soon as you score, the opponent plays theirs.
-    if (isVersus) opponent.playTurn();
+    // Turns alternate: the opponent is up next, once the view says so.
+    if (isVersus) setHandoffPending(true);
+    return true;
   };
 
+  /** The dice are theirs: the opponent plays their turn. */
+  const { playTurn: playOpponentTurn } = opponent;
+  const startOpponentTurn = useCallback(() => {
+    setHandoffPending(false);
+    playOpponentTurn();
+  }, [playOpponentTurn]);
+
   // --- What the views need ---------------------------------------------------
-  /** The single dice tray shows whoever's turn it is. */
-  const tray = isOpponentTurn
+  /**
+   * The single dice tray shows whoever is actually playing. While the turn is
+   * being handed over it still shows yours, so the opponent's previous dice
+   * don't flash up in the wrong theme.
+   */
+  const tray = opponent.isPlaying
     ? {
         dice: opponent.dice,
         keepMask: opponent.keepMask,
@@ -130,5 +181,6 @@ export function useGameSession(
     robotError: character ? opponent.error : null,
     retryRobotTurn: opponent.playTurn,
     score,
+    startOpponentTurn,
   };
 }

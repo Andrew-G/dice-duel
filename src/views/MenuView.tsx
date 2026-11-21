@@ -1,4 +1,4 @@
-import { faGear } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "@/components/Button";
 
@@ -12,6 +12,7 @@ type MenuViewProps = {
   onPlayRobot: () => void;
   onPlayChallenge: () => void;
   onOpenSettings: () => void;
+  onOpenAchievements: () => void;
 };
 
 const MenuView = ({
@@ -22,20 +23,31 @@ const MenuView = ({
   onPlayRobot,
   onPlayChallenge,
   onOpenSettings,
+  onOpenAchievements,
 }: MenuViewProps) => (
   <div className="flex flex-col space-y-3 py-4">
     <header>
       <h1 className="text-center text-2xl font-bold">Dice Duel</h1>
 
       {/* Pinned to the window's top right corner. */}
-      <Button
-        variant="icon"
-        aria-label="Settings"
-        onClick={onOpenSettings}
-        className="fixed right-4 top-4 z-10"
-      >
-        <FontAwesomeIcon icon={faGear} />
-      </Button>
+      <div className="fixed right-4 top-4 z-10 flex gap-2">
+        <Button
+          variant="icon"
+          aria-label="Achievements"
+          title="Achievements"
+          onClick={onOpenAchievements}
+        >
+          <FontAwesomeIcon icon={faTrophy} />
+        </Button>
+        <Button
+          variant="icon"
+          aria-label="Settings"
+          title="Settings"
+          onClick={onOpenSettings}
+        >
+          <FontAwesomeIcon icon={faGear} />
+        </Button>
+      </div>
     </header>
 
     <Button variant="choice" onClick={onPlaySolo}>

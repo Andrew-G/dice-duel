@@ -38,6 +38,9 @@ export type ScoreSheet = {
   total: number | null;
 };
 
+/** How the player did against an opponent. */
+export type GameOutcome = "win" | "loss" | "tie";
+
 /** What the turn-progress and score panels need to draw one player's game. */
 export type GameState = {
   /** 1-based number of the turn being played. */

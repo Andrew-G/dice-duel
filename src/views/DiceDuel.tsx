@@ -9,6 +9,7 @@ import {
 import { scene } from "@/data/scene";
 import { loadSolverTable } from "@/engine/solver/table";
 import type { GameOutcome } from "@/hooks/useGameSession";
+import { useAchievements } from "@/hooks/useAchievements";
 import { useChallengeProgress } from "@/hooks/useChallengeProgress";
 import { useDiceTheme } from "@/hooks/useDiceTheme";
 import { useGameSounds } from "@/hooks/useGameSounds";
@@ -16,7 +17,9 @@ import { useHighScore } from "@/hooks/useHighScore";
 import type { Character } from "@/types/Character";
 import type { Matchup } from "@/types/Matchup";
 import type { SceneMessage } from "@/types/Scene";
+import AchievementToasts from "@/components/AchievementToasts";
 import FadeOverlay from "@/components/FadeOverlay";
+import AchievementsView from "./AchievementsView";
 import ChallengeView from "./ChallengeView";
 import GameView from "./GameView";
 import MenuView from "./MenuView";
@@ -29,6 +32,7 @@ type Screen =
   | { name: "robotSelect" }
   | { name: "challenge" }
   | { name: "settings" }
+  | { name: "achievements" }
   /** A story scene; `onDone` decides where the player goes once it's over. */
   | {
       name: "scene";
@@ -67,6 +71,7 @@ const DiceDuel = () => {
   const highScore = useHighScore();
   const sounds = useGameSounds();
   const challenge = useChallengeProgress();
+  const achievements = useAchievements(challenge.defeated);
   const { clearNewBest } = highScore;
 
   const startGame = (matchup: Matchup) => {
@@ -168,6 +173,8 @@ const DiceDuel = () => {
 
   const showSettings = () => setScreen({ name: "settings" });
 
+  const showAchievements = () => setScreen({ name: "achievements" });
+
   /** Lift the black cover once the scene underneath has loaded. */
   const revealScene = useCallback(() => setCover("none"), []);
 
@@ -200,6 +207,16 @@ const DiceDuel = () => {
             onPlayRobot={showRobotSelect}
             onPlayChallenge={openChallenge}
             onOpenSettings={showSettings}
+            onOpenAchievements={showAchievements}
+          />
+        )}
+
+        {screen.name === "achievements" && (
+          <AchievementsView
+            unlocked={achievements.unlocked}
+            stats={achievements.stats}
+            challengeDefeated={challenge.defeated}
+            onBack={showMenu}
           />
         )}
 
@@ -208,6 +225,7 @@ const DiceDuel = () => {
             diceId={diceTheme.diceId}
             onSelectDice={diceTheme.select}
             onResetChallenge={challenge.reset}
+            onResetAchievements={achievements.reset}
             onBack={showMenu}
           />
         )}
@@ -248,6 +266,7 @@ const DiceDuel = () => {
             sounds={sounds}
             onRestart={() => restart(screen.matchup)}
             onMenu={showMenu}
+            onProgress={achievements.report}
             onChallengeContinue={(outcome) => {
               if (screen.matchup.kind === "challenge") {
                 finishChallengeGame(screen.matchup.stage, outcome);
@@ -262,6 +281,11 @@ const DiceDuel = () => {
           />
         )}
       </div>
+
+      <AchievementToasts
+        ids={achievements.toastIds}
+        onDismiss={achievements.dismissToast}
+      />
 
       <FadeOverlay
         isVisible={cover !== "none"}
