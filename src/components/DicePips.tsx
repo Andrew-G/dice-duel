@@ -6,7 +6,7 @@ const CIRCLE_PIP_SRC = "/img/dice/pip/circle.svg";
 const DEFAULT_PIP_COLOR = "#111827";
 
 /** Edge length of the theme's custom pip, which only the face value 1 shows. */
-const CUSTOM_PIP_SIZE = "16px";
+const CUSTOM_PIP_SIZE = "12px";
 
 /**
  * Pip visual treatments.
@@ -127,9 +127,7 @@ const DicePips = ({ theme, value }: DicePipsProps) => {
           className="flex h-full w-full items-center justify-center"
         >
           {activePips.includes(position) && (
-            <span
-              style={pipStyle(theme, CIRCLE_PIP_SRC, theme.pipSize ?? "70%")}
-            />
+            <span style={pipStyle(theme, CIRCLE_PIP_SRC, "70%")} />
           )}
         </span>
       ))}

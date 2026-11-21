@@ -33,6 +33,7 @@ export const DICE_THEMES: DiceTheme[] = [
   frostTheme,
   midnightNeonTheme,
   starlightTheme,
+  bonesTheme,
 ];
 
 /**
@@ -47,13 +48,10 @@ export const DEFAULT_DICE_ID = DICE_THEMES[0].id;
 export const themesById: Record<string, DiceTheme> = [
   ...DICE_THEMES,
   ...OPPONENT_ONLY_THEMES,
-].reduce(
-  (acc, theme) => {
-    acc[theme.id] = theme;
-    return acc;
-  },
-  {} as Record<string, DiceTheme>
-);
+].reduce((acc, theme) => {
+  acc[theme.id] = theme;
+  return acc;
+}, {} as Record<string, DiceTheme>);
 
 /** Retrieves a theme by ID, falling back to ivory (or the first theme) if not found. */
 export function getDiceTheme(id: string): DiceTheme {

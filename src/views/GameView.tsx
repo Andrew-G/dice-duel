@@ -77,8 +77,8 @@ const GameView = ({
   const statusText = isOpponentTurn
     ? `${opponentName}'s turn`
     : player.isFinished
-      ? "Game over"
-      : `Turn ${player.turnNumber} of ${TURNS_PER_GAME} • Rolls left ${player.rollsRemaining}`;
+    ? "Game over"
+    : `Turn ${player.turnNumber} of ${TURNS_PER_GAME} • Rolls left ${player.rollsRemaining}`;
 
   return (
     <>
@@ -131,6 +131,18 @@ const GameView = ({
         </>
       )}
 
+      {session.isGameOver && (
+        <GameResult
+          playerTotal={session.playerTotal}
+          opponentTotal={isVersus ? session.opponentTotal : undefined}
+          bestScore={highScore.best}
+          isNewBest={highScore.isNewBest}
+          note={challengeResult?.note}
+          actionLabel={challengeResult?.actionLabel}
+          onAction={challengeResult?.onAction ?? onRestart}
+        />
+      )}
+
       <ScoreCard
         player={player.scoreSheet}
         opponent={isVersus ? opponent.scoreSheet : undefined}
@@ -140,20 +152,7 @@ const GameView = ({
         onScore={session.score}
       />
 
-      {session.isGameOver && (
-        <>
-          <GameResult
-            playerTotal={session.playerTotal}
-            opponentTotal={isVersus ? session.opponentTotal : undefined}
-            bestScore={highScore.best}
-            isNewBest={highScore.isNewBest}
-            note={challengeResult?.note}
-            actionLabel={challengeResult?.actionLabel}
-            onAction={challengeResult?.onAction ?? onRestart}
-          />
-          <RecordPanel turns={player.turns} />
-        </>
-      )}
+      {session.isGameOver && <RecordPanel turns={player.turns} />}
     </>
   );
 };

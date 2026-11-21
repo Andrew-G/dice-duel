@@ -21,4 +21,5 @@ export const emberTheme: DiceTheme = {
   pipStyle: "embossed",
 
   faceOpacity: 0.85,
+  faceTexture: "/img/dice/texture/psychedelic.png",
 };

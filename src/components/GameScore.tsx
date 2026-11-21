@@ -1,26 +1,30 @@
-import { GameState } from "@/types/Game";
+import type { GameState, ScoreSheet } from "@/types/Game";
 import React from "react";
 
-const scoreCategoryNames: Record<string, string> = {
+/** Typed against ScoreSheet so renaming a field there is a compile error here. */
+const scoreCategoryNames: Record<keyof ScoreSheet, string> = {
   ones: "Ones",
   twos: "Twos",
   threes: "Threes",
   fours: "Fours",
   fives: "Fives",
   sixes: "Sixes",
-  upper_section_total: "Upper total",
-  upper_bonus_earned: "Upper bonus",
-  three_of_a_kind: "Three of a Kind",
-  four_of_a_kind: "Four of a Kind",
-  full_house: "Full House",
-  small_straight: "Small Straight",
-  large_straight: "Large Straight",
+  upperSectionTotal: "Upper total",
+  upperBonusEarned: "Upper bonus",
+  threeOfAKind: "Three of a Kind",
+  fourOfAKind: "Four of a Kind",
+  fullHouse: "Full House",
+  smallStraight: "Small Straight",
+  largeStraight: "Large Straight",
   yahtzee: "Yahtzee",
   chance: "Chance",
-  lower_bonus: "Lower Bonus",
-  lower_total: "Lower total",
+  lowerBonus: "Lower Bonus",
+  lowerTotal: "Lower total",
   total: "Total",
 };
+
+const formatValue = (value: number | boolean | null): string =>
+  value === null ? "-" : typeof value === "boolean" ? (value ? "Yes" : "No") : String(value);
 
 const GameScore: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   return (
@@ -30,10 +34,10 @@ const GameScore: React.FC<{ gameState: GameState }> = ({ gameState }) => {
           {Object.entries(gameState.scoreSheet).map(([key, value]) => (
             <div key={key} className="flex justify-between border-b pb-1">
               <span className="text-xs font-medium">
-                {scoreCategoryNames[key]}:
+                {scoreCategoryNames[key as keyof ScoreSheet]}:
               </span>
               <span className="text-xs text-gray-700">
-                {value === null ? "-" : value}
+                {formatValue(value)}
               </span>
             </div>
           ))}

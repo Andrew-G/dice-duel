@@ -21,4 +21,5 @@ export const starlightTheme: DiceTheme = {
   pipStyle: "embossed",
 
   faceOpacity: 0.85,
+  faceTexture: "/img/dice/texture/steel.jpg",
 };

@@ -21,4 +21,5 @@ export const obsidianTheme: DiceTheme = {
   pipStyle: "debossed",
 
   faceOpacity: 1,
+  faceTexture: "/img/dice/texture/steel.jpg",
 };

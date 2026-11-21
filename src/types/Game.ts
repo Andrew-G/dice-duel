@@ -38,6 +38,14 @@ export type ScoreSheet = {
   total: number | null;
 };
 
+/** What the turn-progress and score panels need to draw one player's game. */
+export type GameState = {
+  /** 1-based number of the turn being played. */
+  turnNumber: number;
+  rollsRemaining: number;
+  scoreSheet: ScoreSheet;
+};
+
 /** Always returns a fresh object, so sheets are never shared by accident. */
 export function createEmptyScoreSheet(): ScoreSheet {
   return {

@@ -1,8 +1,8 @@
-import DicePips from "@/components/DicePips";
 import { DICE_THEMES } from "@/data/dice";
 import type { Die } from "@/types/Dice";
 import type { DiceTheme } from "@/types/DiceTheme";
 import clsx from "clsx";
+import DieFace from "./DieFace";
 
 /** The faces shown in a theme's preview: its custom pip, and its circles. */
 const PREVIEW_VALUES: readonly Die[] = [1, 5];
@@ -10,22 +10,17 @@ const PREVIEW_VALUES: readonly Die[] = [1, 5];
 type PreviewDieProps = {
   theme: DiceTheme;
   value: Die;
+  isKept?: boolean;
 };
 
-/** A small die face, drawn the same way as the dice in a game. */
-const PreviewDie = ({ theme, value }: PreviewDieProps) => (
-  <span
-    aria-hidden="true"
-    className="flex h-10 w-10 items-center justify-center rounded border-b-2 border-l border-r-2 border-t p-1.5"
-    style={{
-      backgroundImage: `linear-gradient(to bottom right, ${theme.bgFrom}, ${theme.bgTo})`,
-      borderTopColor: theme.borderLight,
-      borderLeftColor: theme.borderLight,
-      borderBottomColor: theme.borderDark,
-      borderRightColor: theme.borderDark,
-    }}
-  >
-    <DicePips theme={theme} value={value} />
+/**
+ * A small die face for a theme tile. Decorative and non-interactive, so it
+ * doesn't use `GameDie`: the tile is already a button, and a button can't
+ * contain another.
+ */
+const PreviewDie = ({ theme, value, isKept }: PreviewDieProps) => (
+  <span aria-hidden="true" className="block h-10 w-10 shrink-0">
+    <DieFace theme={theme} value={value} isKept={isKept} />
   </span>
 );
 
@@ -64,7 +59,12 @@ const DiceThemePicker = ({ selectedId, onSelect }: DiceThemePickerProps) => (
           >
             <span className="flex gap-1.5">
               {PREVIEW_VALUES.map((value) => (
-                <PreviewDie key={value} theme={theme} value={value} />
+                <PreviewDie
+                  key={value}
+                  theme={theme}
+                  value={value}
+                  isKept={value === 5}
+                />
               ))}
             </span>
 

@@ -21,4 +21,6 @@ export const bonesTheme: DiceTheme = {
   pipStyle: "flat",
 
   faceOpacity: 0.9,
+  faceTexture: "/img/dice/texture/bone.jpg",
+  faceTextureBlend: "darken",
 };

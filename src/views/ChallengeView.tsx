@@ -97,9 +97,9 @@ const ChallengeView = ({
             <p className="max-w-md font-medium text-white/85">
               {opponent.brief}
             </p>
-            <p className="max-w-md text-sm text-white/55">
+            {/* <p className="max-w-md text-sm text-white/55">
               {opponent.description}
-            </p>
+            </p> */}
 
             {isComplete && (
               <p className="text-sm text-indigo-200">
@@ -112,13 +112,8 @@ const ChallengeView = ({
               <Button onClick={() => onStart(stage)}>
                 {isComplete
                   ? `Rematch ${opponent.name}`
-                  : `Fight ${opponent.name}`}
+                  : `Battle ${opponent.name}`}
               </Button>
-              {!isComplete && defeated > 0 && (
-                <span className="text-sm text-white/60">
-                  Lose, and you try again until you win.
-                </span>
-              )}
             </div>
           </div>
         </div>
@@ -133,15 +128,17 @@ const ChallengeView = ({
             index < defeated
               ? "beaten"
               : index === defeated
-                ? "next"
-                : "locked";
+              ? "next"
+              : "locked";
           return (
             <li
               key={character.id}
               aria-label={
                 state === "locked"
                   ? `Opponent ${index + 1}: locked`
-                  : `Opponent ${index + 1}: ${character.name}, ${state === "beaten" ? "beaten" : "next up"}`
+                  : `Opponent ${index + 1}: ${character.name}, ${
+                      state === "beaten" ? "beaten" : "next up"
+                    }`
               }
               className={clsx(
                 "relative flex flex-col items-center gap-1 rounded-md border p-1.5 text-center",

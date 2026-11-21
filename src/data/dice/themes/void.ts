@@ -21,4 +21,6 @@ export const voidTheme: DiceTheme = {
   pipStyle: "debossed",
 
   faceOpacity: 0.9,
+  faceTexture: "/img/dice/texture/geometric.png",
+  faceTextureBlend: "multiply",
 };
