@@ -5,6 +5,7 @@ import {
   UPPER_CATEGORIES,
 } from "@/engine/score";
 import type { ScoreCategory, ScoreSheet } from "@/types/Game";
+import clsx from "clsx";
 import type { ReactNode } from "react";
 
 const LABELS: Record<ScoreCategory, string> = {
@@ -122,17 +123,38 @@ const ScoreCard = ({
     label: string,
     cell: (sheet: ScoreSheet) => ReactNode
   ) => (
-    <tr key={label} className={`font-bold text-white`}>
-      <th scope="row" className="py-1 pr-2 text-left font-normal">
-        {/* <h4>{label}</h4> */}
-      </th>
+    <tr
+      key={label}
+      className={`font-bold text-white [--shimmer-spread:10px] [--shimmer-track-width:1px] shimmer-repeat-delay-2000 shimmer-speed-50 shimmer-color-orange-200`}
+    >
+      <th scope="row"></th>
       <td className="w-24 px-2 py-1 text-right">
-        <h4 className="text-3xl">{cell(player)}</h4>
+        <h4 className="text-white text-3xl">
+          <span
+            className={clsx(
+              "shimmer",
+              (player?.total || 0) > (opponent?.total || 0)
+                ? "text-foreground/80"
+                : "text-foreground/60"
+            )}
+          >
+            {cell(player)}
+          </span>
+        </h4>
       </td>
       {opponent && (
         <td className="w-24 px-2 py-1 text-right">
-          <h4 className="text-3xl shimmer shimmer-angle-75 text-foreground/40">
-            {cell(opponent)}
+          <h4 className="text-white text-3xl">
+            <span
+              className={clsx(
+                "shimmer",
+                (opponent?.total || 0) > (player?.total || 0)
+                  ? "text-foreground/80"
+                  : "text-foreground/60"
+              )}
+            >
+              {cell(opponent)}
+            </span>
           </h4>
         </td>
       )}
@@ -141,7 +163,6 @@ const ScoreCard = ({
 
   return (
     <div className="rounded-md bg-black/40 p-3 text-sm text-white">
-      <span className="shimmer text-foreground/60">Loading...</span>
       <table className="w-full border-collapse">
         <thead>
           {headerScoreRow("Total", (sheet) => sheet.total ?? 0)}
