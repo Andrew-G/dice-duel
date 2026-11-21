@@ -29,7 +29,7 @@ const formatValue = (value: number | boolean | null): string =>
 const GameScore: React.FC<{ gameState: GameState }> = ({ gameState }) => {
   return (
     <div className="space-y-2">
-      <div className="bg-gray-100 p-3 rounded-md shadow-sm">
+      <div className="bg-gray-100 p-3 rounded-md shadow-xs">
         <div className="space-y-1">
           {Object.entries(gameState.scoreSheet).map(([key, value]) => (
             <div key={key} className="flex justify-between border-b pb-1">

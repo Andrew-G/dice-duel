@@ -51,7 +51,7 @@ const GameDie = ({
       aria-label={`${isKept ? "Unkeep" : "Keep"} die ${
         i + 1
       }, showing ${faceValue}`}
-      className="group absolute inset-0 m-0 rounded p-0 transition-all duration-150 hover:-inset-0.5 hover:z-10"
+      className="group absolute inset-0 m-0 rounded-sm p-0 transition-all duration-150 hover:-inset-0.5 hover:z-10"
       onClick={() => onKeepToggle?.(i)}
     >
       <DieFace theme={theme} value={faceValue} isKept={isKept} />

@@ -6,7 +6,7 @@ import { recordingFileName, serializeRecordedGame } from "@/engine/serialize";
 import type { RecordedTurn } from "@/types/Recording";
 
 const buttonClass =
-  "rounded-md bg-gray-100 px-4 py-2 text-sm text-black shadow hover:bg-white";
+  "rounded-md bg-gray-100 px-4 py-2 text-sm text-black shadow-sm hover:bg-white";
 
 /** Shown when any game ends: optionally name it, then download the JSON. */
 const RecordPanel = ({ turns }: { turns: RecordedTurn[] }) => {

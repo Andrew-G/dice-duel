@@ -50,7 +50,7 @@ const DiceThemePicker = ({ selectedId, onSelect }: DiceThemePickerProps) => (
             onClick={() => onSelect(theme.id)}
             className={clsx(
               "flex w-28 flex-col items-center gap-1.5 rounded-lg border p-2 text-xs",
-              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300",
+              "focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-indigo-300",
 
               isSelected
                 ? "border-white/50 bg-white/15"

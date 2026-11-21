@@ -22,7 +22,7 @@ const GameChat = ({ messages }: { messages: string[] }) => {
       {messages.map((msg, i) => (
         <div
           key={i}
-          className="rounded-lg bg-indigo-600/[.25] px-3 py-2 text-sm text-white shadow"
+          className="rounded-lg bg-indigo-600/25 px-3 py-2 text-sm text-white shadow-sm"
         >
           {msg}
         </div>

@@ -1,6 +1,129 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import "tw-shimmer";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --animate-die-throb: die-throb 1.2s ease-in-out infinite;
+  --animate-opponent-slam: opponent-slam 0.85s cubic-bezier(0.2, 0.7, 0.3, 1)
+    both;
+  --animate-stage-shake: stage-shake 0.35s linear 0.5s both;
+  --animate-impact-ring: impact-ring 0.7s ease-out 0.5s both;
+  --animate-opponent-name:
+    name-reveal 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.95s both,
+    shimmer 2.6s linear 1.8s infinite;
+  --animate-fade-up: fade-up 0.5s ease-out 1.5s both;
+
+  @keyframes die-throb {
+    0%,
+    100% {
+      border-color: var(--die-highlight-primary);
+      box-shadow: 0 0 5px 0 var(--die-highlight-primary);
+    }
+    50% {
+      border-color: var(--die-highlight-secondary);
+      box-shadow: 0 0 10px 1px var(--die-highlight-secondary);
+    }
+  }
+  @keyframes opponent-slam {
+    0% {
+      opacity: 0;
+      transform: translateY(-140%) scale(1.9) rotate(-8deg);
+      filter: blur(10px);
+    }
+    55% {
+      opacity: 1;
+      transform: translateY(0) scale(0.9) rotate(1.5deg);
+      filter: blur(0);
+    }
+    75% {
+      transform: translateY(-3%) scale(1.04) rotate(-0.5deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1) rotate(0);
+    }
+  }
+  @keyframes stage-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-6px, 3px);
+    }
+    40% {
+      transform: translate(5px, -4px);
+    }
+    60% {
+      transform: translate(-3px, 2px);
+    }
+    80% {
+      transform: translate(2px, -1px);
+    }
+  }
+  @keyframes impact-ring {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.2);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes name-reveal {
+    0% {
+      opacity: 0;
+      transform: scale(1.5);
+      letter-spacing: 0.35em;
+      filter: blur(14px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      letter-spacing: 0.04em;
+      filter: blur(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+  @keyframes fade-up {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 :root {
   --background: #ffffff;

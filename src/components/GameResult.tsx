@@ -95,7 +95,7 @@ const GameResult = ({
           <div className={versus.verdict.glow}>
             <h3
               style={{ backgroundImage: versus.verdict.fill }}
-              className="bg-[length:300%_100%] bg-clip-text px-3 text-5xl font-black italic leading-tight tracking-wide text-transparent motion-safe:animate-opponent-name sm:text-6xl"
+              className="bg-size-[300%_100%] bg-clip-text px-3 text-5xl font-black italic leading-tight tracking-wide text-transparent motion-safe:animate-opponent-name sm:text-6xl"
             >
               {versus.verdict.text}
             </h3>

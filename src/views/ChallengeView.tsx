@@ -53,7 +53,7 @@ const ChallengeView = ({
 
       <section
         aria-labelledby="challenge-opponent"
-        className="relative flex flex-col items-center overflow-hidden rounded-lg border border-white/10 bg-gradient-to-b from-indigo-950/70 to-black px-4 pb-6 pt-5 text-center"
+        className="relative flex flex-col items-center overflow-hidden rounded-lg border border-white/10 bg-linear-to-b from-indigo-950/70 to-black px-4 pb-6 pt-5 text-center"
       >
         <div
           aria-hidden="true"
@@ -87,7 +87,7 @@ const ChallengeView = ({
             <h3
               id="challenge-opponent"
               style={{ backgroundImage: NAME_FILL }}
-              className="bg-[length:300%_100%] bg-clip-text px-3 text-5xl font-black italic leading-tight tracking-wide text-transparent motion-safe:animate-opponent-name sm:text-6xl"
+              className="bg-size-[300%_100%] bg-clip-text px-3 text-5xl font-black italic leading-tight tracking-wide text-transparent motion-safe:animate-opponent-name sm:text-6xl"
             >
               {opponent.name}
             </h3>

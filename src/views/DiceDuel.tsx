@@ -189,8 +189,8 @@ const DiceDuel = () => {
   };
 
   return (
-    <main className="flex min-h-screen w-full items-center bg-gradient-to-b from-violet-950/[0.9] to-indigo-950/[0.75]">
-      <div className="m-auto flex w-full max-w-full flex-col space-y-4 rounded-lg border border-black/[.75] bg-gradient-to-b from-black/[.5] to-black p-4 text-white shadow-2xl md:w-[40rem]">
+    <main className="flex min-h-screen w-full items-center bg-linear-to-b from-violet-950/90 to-indigo-950/75">
+      <div className="m-auto flex w-full max-w-full flex-col space-y-4 rounded-lg border border-black/75 bg-linear-to-b from-black/50 to-black p-4 text-white shadow-2xl md:w-160">
         {screen.name === "menu" && (
           <MenuView
             bestScore={highScore.best}

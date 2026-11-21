@@ -64,7 +64,7 @@ const ScoreCard = ({
               type="button"
               onClick={() => onScore?.(category)}
               aria-label={`Score ${preview} in ${LABELS[category]}`}
-              className={`w-full rounded px-2 py-0.5 text-right bg-indigo-500/20 hover:bg-indigo-500/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-300 ${
+              className={`w-full rounded px-2 py-0.5 text-right bg-indigo-500/20 hover:bg-indigo-500/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-indigo-300 ${
                 preview === 0 ? "text-white/50" : "text-indigo-200"
               }`}
             >

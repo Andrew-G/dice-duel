@@ -79,17 +79,17 @@ type DieFaceProps = {
 const DieFace = ({ theme, value, isKept, className }: DieFaceProps) => (
   <span
     className={clsx(
-      "flex h-full w-full items-center justify-center rounded p-1.5 font-bold text-white",
+      "flex h-full w-full items-center justify-center rounded-sm p-1.5 font-bold text-white",
       "transition-shadow duration-150",
 
       "[box-shadow:2px_2px_6px_var(--die-shadow)]",
       "group-hover:[box-shadow:4px_6px_12px_var(--die-shadow)]",
 
       isKept
-        ? "border-2 border-[color:var(--die-highlight-primary)] motion-safe:animate-die-throb"
+        ? "border-2 border-(--die-highlight-primary) motion-safe:animate-die-throb"
         : "border-l border-t border-b-2 border-r-2 " +
-            "border-l-[color:var(--die-border-light)] border-t-[color:var(--die-border-light)] " +
-            "border-b-[color:var(--die-border-dark)] border-r-[color:var(--die-border-dark)]",
+            "border-l-(--die-border-light) border-t-(--die-border-light) " +
+            "border-b-(--die-border-dark) border-r-(--die-border-dark)",
 
       className
     )}
